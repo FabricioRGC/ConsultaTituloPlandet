@@ -9,7 +9,7 @@ class Database {
         if (self::$connection === null) {
             try {
                 // Ajusta host, dbname, user y password según tu entorno
-                $dsn = "mysql:host=localhost;dbname=titulosplandetdf;charset=utf8mb4";
+                $dsn = "mysql:host=localhost;dbname=titulo;charset=utf8mb4";
                 $user = "root";
                 $pass = ""; // <- pon tu contraseña si aplica
 
