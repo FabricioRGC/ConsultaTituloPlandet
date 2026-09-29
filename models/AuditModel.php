@@ -64,6 +64,49 @@ class AuditModel
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    //Agregado nuevo Rom
+    public function getTodayActivitiesForUserOrAdmin(int $userId, string $role): array
+{
+    // 🔥 Filtramos para traer solo los registros de subida/creación de archivos (ej. 'CREATE_QR')
+    if ($role === 'admin') {
+        $stmt = $this->db->prepare(
+            "SELECT 
+                DATE_FORMAT(al.created_at, '%h:%i %p') AS hora,
+                al.action,
+                al.module,
+                al.description,
+                al.metadata,
+                al.created_at,
+                u.name AS user_name
+             FROM activity_log al
+             LEFT JOIN app_users u ON u.id = al.user_id
+             WHERE DATE(al.created_at) = CURDATE() 
+               AND al.action = 'CREATE_QR'
+             ORDER BY al.created_at DESC"
+        );
+        $stmt->execute();
+    } else {
+        $stmt = $this->db->prepare(
+            "SELECT 
+                DATE_FORMAT(al.created_at, '%h:%i %p') AS hora,
+                al.action,
+                al.module,
+                al.description,
+                al.metadata,
+                al.created_at,
+                u.name AS user_name
+             FROM activity_log al
+             LEFT JOIN app_users u ON u.id = al.user_id
+             WHERE al.user_id = ? 
+               AND DATE(al.created_at) = CURDATE() 
+               AND al.action = 'CREATE_QR'
+             ORDER BY al.created_at DESC"
+        );
+        $stmt->execute([$userId]);
+    }
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     public function getRecentActivities(int $limit = 30): array
     {

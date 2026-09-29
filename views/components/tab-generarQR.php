@@ -5,6 +5,18 @@ $tabKey = 'generarQR';
 
 $controller = new QRController();
 
+$usuarioId = $_SESSION['usuario_id'] ?? 0;
+$rolUsuario = $_SESSION['usuario_rol'] ?? 'user';
+
+$auditModel = new AuditModel();
+$historialHoyDb = $auditModel->getTodayActivitiesForUserOrAdmin($usuarioId, $rolUsuario);
+
+// Preparamos el JSON de forma segura en PHP antes de pintarlo en el script
+$jsonEnvios = json_encode($historialHoyDb, JSON_UNESCAPED_UNICODE);
+
+
+
+
 // 1. Manejo del Formulario de Subida (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->generar();
@@ -22,14 +34,14 @@ $fechaActual = date('Y-m-d');
 
 <div class="tab-generarQR">
     <div class="main-container">
-
         <div class="content-wrapper">
+            
+            <!-- PANEL IZQUIERDO -->
             <aside class="left-panel">
                 <div class="left-panel-scroll">
                     <section class="card">
                         <h2 class="card-title">📤 Subir PDF</h2>
 
-                        <!-- 🔥 MODIFICADO: Agregar &tab= en action -->
                         <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate
                             action="?action=dasboard&tab=<?= urlencode($tabKey) ?>">
 
@@ -64,9 +76,14 @@ $fechaActual = date('Y-m-d');
                                 <div class="invalid-feedback">Por favor, sube un archivo PDF válido.</div>
                             </div>
 
-                            <button type="button" class="btn btn-submit" onclick="validarYSubir(this.form);">
-                                📁 Subir Archivo
-                            </button>   
+                            <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                <button type="button" class="btn btn-submit" onclick="validarYSubir(this.form);" style="flex: 2;">
+                                    📁 Subir Archivo
+                                </button>
+                                <button type="button" class="btn" onclick="mostrarHistorialHoy()" style="flex: 1; background: #e2e8f0; color: #1e293b; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">
+                                    📋 Historial
+                                </button>
+                            </div>
                         </form>
                     </section>
 
@@ -144,6 +161,7 @@ $fechaActual = date('Y-m-d');
                 </div>
             </aside>
 
+            <!-- PANEL DERECHO -->
             <main class="right-panel">
                 <div class="preview-container">
                     <h2 class="preview-title">📄 Vista Previa del Documento</h2>
@@ -155,17 +173,19 @@ $fechaActual = date('Y-m-d');
                     <iframe class="pdf-viewer" id="pdf-preview" title="Previsualización del PDF con QR"></iframe>
                 </div>
             </main>
+
         </div>
     </div>
+</div>
 
-    <div class="toast-container">
-        <div id="liveToast" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
-            <div class="toast-header">
-                <strong>⚠️ Aviso</strong>
-            </div>
-            <div class="toast-body">
-                Mensaje de notificación
-            </div>
+<!-- Contenedor de Alertas Toast Flotante en la esquina SUPERIOR DERECHA -->
+<div class="toast-container" style="position: fixed !important; top: 80px !important; right: 20px !important; bottom: auto !important; left: auto !important; width: auto !important; max-width: 350px !important; z-index: 9999 !important;">
+    <div id="liveToast" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000" style="width: 100% !important; background: white !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; border-radius: 8px !important;">
+        <div class="toast-header" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 8px 12px;">
+            <strong class="me-auto" style="font-weight: 600; color: #1e293b;">⚠️ Aviso</strong>
+        </div>
+        <div class="toast-body" style="padding: 12px; color: #475569; font-size: 14px;">
+            Mensaje de notificación
         </div>
     </div>
 </div>
@@ -183,6 +203,7 @@ $fechaActual = date('Y-m-d');
     const uploadSucceeded = "<?= ($_GET['uploaded'] ?? '') === '1' ? '1' : '0' ?>" === "1";
     const serverQrPath = "<?php echo $qrPath; ?>";
     const mainForm = document.querySelector('.needs-validation');
+    const enviosHoy = <?php echo $jsonEnvios; ?>;
 
     // ================================
     // VARIABLES GLOBALES
@@ -247,7 +268,7 @@ $fechaActual = date('Y-m-d');
         localStorage.removeItem('qr_form_partida');
     }
 
-   function validarYSubir(form) {
+    function validarYSubir(form) {
     // 1. Capturar los campos
     const titulo = document.getElementById('title');
     const partida = document.getElementById('partida');
@@ -280,25 +301,94 @@ $fechaActual = date('Y-m-d');
     Swal.fire({
         title: 'Verifica los datos de envío',
         html: `
-            <div style="text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px;">
-                <p style="margin: 4px 0;"><strong>Título:</strong> ${valorTitulo}</p>
-                <p style="margin: 4px 0;"><strong>Partida:</strong> ${valorPartida}</p>
-                <p style="margin: 4px 0;"><strong>Archivo:</strong> ${nombreArchivo}</p>
-            </div>
-            <p style="margin-top: 12px; font-size: 14px;">¿Deseas proceder con la subida?</p>
-        `,
+        <div style="text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px;">
+            <p style="margin: 4px 0;"><strong>Título:</strong> ${valorTitulo}</p>
+            <p style="margin: 4px 0;"><strong>Partida:</strong> ${valorPartida}</p>
+            <p style="margin: 4px 0;"><strong>Archivo:</strong> ${nombreArchivo}</p>
+        </div>
+        <p style="margin-top: 12px; font-size: 14px;">¿Deseas proceder con la subida?</p>
+    `,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#2563eb', // Azul corporativo
-        cancelButtonColor: '#dc2626',  // Rojo cancelar
+        cancelButtonColor: '#dc2626', // Rojo cancelar
         confirmButtonText: 'Sí, subir archivo',
-        cancelButtonText: 'Revisar'
+        cancelButtonText: 'Revisar',
+        allowOutsideClick: false // Evita que se cierre haciendo clic fuera por error
     }).then((result) => {
         if (result.isConfirmed) {
-            form.submit(); // Envía el formulario si todo está correcto
+            // 🔥 BLOQUEO DE DOBLE ENVÍO: Desactivar el botón del formulario visualmente
+            const btnSubmit = form.querySelector('.btn-submit');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '⏳ Subiendo...';
+            }
+
+            // Mostrar una alerta de carga de SweetAlert para bloquear la interfaz
+            Swal.fire({
+                title: 'Subiendo archivo...',
+                text: 'Por favor espere un momento.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            form.submit(); // Envía el formulario una sola vez de forma segura
         }
     });
 }
+
+    function mostrarHistorialHoy() {
+        if (!enviosHoy || enviosHoy.length === 0) {
+            Swal.fire({
+                title: 'Historial de hoy',
+                text: 'No hay registros de actividad en el sistema para el día de hoy.',
+                icon: 'info',
+                confirmButtonColor: '#2563eb'
+            });
+            return;
+        }
+
+        // Construimos las filas de la tabla con los datos que llegaron
+        let filasHTML = '';
+        enviosHoy.forEach((item) => {
+            filasHTML += `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 8px; text-align: center; color: #64748b; font-size: 12px;">${item.hora}</td>
+                    <td style="padding: 8px; font-weight: 500; color: #1e293b;">${item.user_name || 'Sistema'}</td>
+                    <td style="padding: 8px; color: #475569;">${item.action}</td>
+                    <td style="padding: 8px; color: #475569; font-size: 13px;">${item.description || 'Sin descripción'}</td>
+                </tr>
+            `;
+        });
+
+        // Mostramos la ventana flotante
+        Swal.fire({
+            title: '📋 Registros y Envíos de Hoy',
+            html: `
+                <div style="max-height: 280px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead style="background: #f8fafc; position: sticky; top: 0; border-bottom: 2px solid #e2e8f0;">
+                            <tr>
+                                <th style="padding: 8px; text-align: center;">Hora</th>
+                                <th style="padding: 8px;">Usuario</th>
+                                <th style="padding: 8px;">Acción</th>
+                                <th style="padding: 8px;">Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filasHTML}
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 12px; font-size: 12px; color: #64748b;">Total de acciones hoy: <strong>${enviosHoy.length}</strong></p>
+            `,
+            width: '650px',
+            confirmButtonText: 'Cerrar',
+            confirmButtonColor: '#2563eb'
+        });
+    }
 
     document.addEventListener("DOMContentLoaded", function() {
         if (uploadSucceeded) {
@@ -553,4 +643,32 @@ $fechaActual = date('Y-m-d');
         });
         toast.show();
     }
+    // ================================
+// SINCRONIZAR Y PERSISTIR INPUTS (Protegido)
+// ================================
+if (titleInput && tituloNumberInput) {
+    titleInput.addEventListener('input', function() {
+        localStorage.setItem('qr_form_title', this.value);
+        tituloNumberInput.value = this.value;
+    });
+    saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
+}
+
+if (partidaInput && numberInput) {
+    partidaInput.addEventListener('input', function() {
+        localStorage.setItem('qr_form_partida', this.value);
+        numberInput.value = this.value;
+    });
+    saveToLocalStorageOnChange(numberInput, 'qr_form_partida');
+}
+
+const clearFormBtn = document.getElementById("clearForm");
+if (clearFormBtn && mainForm) {
+    clearFormBtn.addEventListener("click", function() {
+        resetGenerationFormState();
+        mainForm.classList.remove('was-validated');
+        window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
+        showToast("Formulario y datos persistentes limpiados.", "success");
+    });
+}
 </script>

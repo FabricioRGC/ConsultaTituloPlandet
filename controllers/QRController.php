@@ -32,13 +32,18 @@ class QRController
         if ($model->insert($partida, $title, $pdfPath, $qrPath, $uniqueId, $fecha)) {
             if (session_status() !== PHP_SESSION_ACTIVE) session_start();
             $audit = new AuditModel();
+            
+            // 🔥 AQUÍ CAMBIAMOS LA DESCRIPCIÓN GENÉRICA POR UNA DETALLADA:
+            $nombreArchivoOriginal = $pdf['name'] ?? 'Desconocido';
+            $descripcionDetallada = "Subió el PDF: '{$nombreArchivoOriginal}' (Título: {$title})";
+
             $audit->logActivity(
                 (int)($_SESSION['usuario_id'] ?? 0),
                 'CREATE_QR',
                 'QR',
                 'documents',
                 $uniqueId,
-                'Registro de documento con QR',
+                $descripcionDetallada, // <--- Aquí se inyecta el nombre del archivo y el título
                 [
                     'title' => $title,
                     'partida' => $partida,
