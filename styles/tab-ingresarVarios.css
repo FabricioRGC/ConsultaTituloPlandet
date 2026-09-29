@@ -1,0 +1,465 @@
+/* ============================================
+   ESTILOS AISLADOS PARA TAB-INGRESAR-VARIOS
+   ============================================ */
+
+/* Contenedor principal específico */
+.upload-wrapper {
+    /* Variables de diseño locales */
+    --color-primary: #2e7d32;
+    --color-primary-dark: #1b5e20;
+    --color-primary-light: #4caf50;
+    --color-secondary: #7f61e0;
+    --color-background: #e8f5e9;
+    --color-card-bg: #ffffff;
+    --color-text-primary: #000000;
+    --color-text-secondary: #3e3f3e;
+    --color-text-muted: #7cb342;
+    --color-border: #c8e6c9;
+    --color-shadow: rgba(46, 125, 50, 0.1);
+    --color-hover: #a5d6a7;
+    --color-error: #d32f2f;
+    --border-radius: 12px;
+    --transition: all 0.3s ease;
+}
+
+/* Reset solo dentro del wrapper */
+.upload-wrapper * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos del body solo cuando contiene upload-wrapper */
+body:has(.upload-wrapper) {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #1b5e20;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Wrapper principal */
+.upload-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.upload-wrapper .upload-container {
+    width: 100%;
+    max-width: 900px;
+    animation: uploadFadeInUp 0.6s ease;
+    margin-top: -200px;
+}
+
+/* Header */
+.upload-wrapper .upload-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.upload-wrapper .upload-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.upload-wrapper .upload-subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+}
+
+/* Card principal */
+.upload-wrapper .upload-card {
+    background: var(--color-card-bg);
+    border-radius: var(--border-radius);
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px var(--color-shadow);
+    transition: var(--transition);
+}
+
+.upload-wrapper .upload-card:hover {
+    box-shadow: 0 15px 50px rgba(46, 125, 50, 0.15);
+}
+
+/* Formulario */
+.upload-wrapper .upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.upload-wrapper .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Labels */
+.upload-wrapper .form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.upload-wrapper .label-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary);
+}
+
+/* Input de archivo personalizado */
+.upload-wrapper .file-input-wrapper {
+    position: relative;
+}
+
+.upload-wrapper .file-input {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.upload-wrapper .file-input-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem 2rem;
+    border: 3px dashed var(--color-border);
+    border-radius: var(--border-radius);
+    background: linear-gradient(to bottom, #f1f8f4, #ffffff);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.upload-wrapper .file-input-label:hover,
+.upload-wrapper .file-input-label.drag-over {
+    border-color: var(--color-primary);
+    background: linear-gradient(to bottom, #e8f5e9, #f1f8f4);
+    transform: translateY(-2px);
+}
+
+.upload-wrapper .upload-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--color-primary);
+    stroke-width: 2;
+}
+
+.upload-wrapper .file-input-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.upload-wrapper .file-input-hint {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+/* Feedback de validación */
+.upload-wrapper .feedback-invalid {
+    display: none;
+    color: var(--color-error);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.upload-wrapper .upload-form.was-validated .file-input:invalid ~ .feedback-invalid {
+    display: block;
+}
+
+/* Previsualización de archivos */
+.upload-wrapper .file-preview-container {
+    animation: uploadFadeIn 0.4s ease;
+}
+
+.upload-wrapper .preview-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.upload-wrapper .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Card de archivo individual */
+.upload-wrapper .file-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    background: linear-gradient(to right, #f1f8f4, #ffffff);
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    gap: 1rem;
+}
+
+.upload-wrapper .file-card:hover {
+    border-color: var(--color-primary-light);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+/* Información del archivo */
+.upload-wrapper .file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.upload-wrapper .file-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background);
+    border-radius: 8px;
+}
+
+.upload-wrapper .file-icon svg {
+    width: 28px;
+    height: 28px;
+    color: var(--color-primary);
+}
+
+.upload-wrapper .file-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.upload-wrapper .file-name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.upload-wrapper .file-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.upload-wrapper .file-separator {
+    color: var(--color-border);
+}
+
+/* Información del QR */
+.upload-wrapper .qr-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.upload-wrapper .qr-placeholder {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-card-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    animation: uploadPulse 2s infinite;
+}
+
+.upload-wrapper .qr-placeholder svg {
+    width: 32px;
+    height: 32px;
+    color: var(--color-text-muted);
+}
+
+.upload-wrapper .qr-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.upload-wrapper .qr-id {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    font-family: 'Courier New', monospace;
+}
+
+.upload-wrapper .qr-status {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    padding: 0.15rem 0.5rem;
+    background: var(--color-background);
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Acciones del formulario */
+.upload-wrapper .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Botones */
+.upload-wrapper .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.upload-wrapper .btn-icon {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
+}
+
+.upload-wrapper .btn-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+
+.upload-wrapper .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+}
+
+.upload-wrapper .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.upload-wrapper .btn-secondary {
+    background: var(--color-card-bg);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+}
+
+.upload-wrapper .btn-secondary:hover {
+    background: var(--color-background);
+    transform: translateY(-2px);
+}
+
+/* Animaciones con prefijo único */
+@keyframes uploadFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes uploadFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes uploadPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .upload-wrapper .upload-container {
+        margin-top: -80px;
+    }
+
+    .upload-wrapper .upload-title {
+        font-size: 2rem;
+    }
+    
+    .upload-wrapper .upload-subtitle {
+        font-size: 1rem;
+    }
+    
+    .upload-wrapper .upload-card {
+        padding: 1.5rem;
+    }
+    
+    .upload-wrapper .file-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .upload-wrapper .qr-info {
+        width: 100%;
+        justify-content: space-between;
+        padding-top: 1rem;
+        border-top: 1px solid var(--color-border);
+    }
+    
+    .upload-wrapper .form-actions {
+        flex-direction: column;
+    }
+    
+    .upload-wrapper .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-wrapper {
+        padding: 1rem 0.5rem;
+    }
+
+    .upload-wrapper .upload-container {
+        margin-top: -50px;
+    }
+    
+    .upload-wrapper .upload-title {
+        font-size: 1.75rem;
+    }
+    
+    .upload-wrapper .file-input-label {
+        padding: 2rem 1rem;
+    }
+}

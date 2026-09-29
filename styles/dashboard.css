@@ -1,0 +1,21 @@
+/* Estilos generales del dashboard */
+.dashboard-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* Subtítulo */
+.dashboard-subtitle {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.tab-content {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0; 
+}

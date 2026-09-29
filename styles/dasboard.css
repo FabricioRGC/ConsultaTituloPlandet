@@ -1,0 +1,78 @@
+﻿/* Estilos generales del dasboard */
+.dasboard-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* SubtÃ­tulo */
+.dasboard-subtitle {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+
+.dashboard-shell {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.dasboard-title {
+    color: var(--text-900, #0f172a);
+}
+
+.dasboard-subtitle {
+    color: var(--text-700, #334155);
+}
+
+/*Agregado:
+/* --- Sistema de Notificaciones Flotantes (Toasts) --- */
+#toast-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    min-width: 260px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success {
+    background-color: var(--green, #16a34a);
+}
+
+.toast.error {
+    background-color: #dc2626;
+}
+
+.toast.info {
+    background-color: var(--blue, #2563eb);
+}
+

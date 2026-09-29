@@ -1,0 +1,76 @@
+/* colores reutilizables */
+:root {
+  --green: #16a34a;
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* contenedor */
+.tabs-container {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  margin-top: -15px;
+  margin-bottom: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+/* botones */
+.tab-btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.tab-btn:hover {
+  background: #cbf3dd;
+}
+
+.tab-btn.active {
+  color: white !important;
+}
+
+/* contenido */
+.tab-content {
+  display: none;
+  animation: fade 0.3s;
+}
+.tabs-container:has(.tab-btn:only-child) {
+  justify-content: center;
+  background: transparent; /* se limpia el fondo grande */
+  box-shadow: none; /* no necesitamos sombra del contenedor */
+}
+
+/* botón único con estilo "card" */
+.tabs-container:has(.tab-btn:only-child) .tab-btn {
+  flex: 0;
+  width: auto;
+  padding: 12px 28px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e5e5;
+}
+
+/* hover del botón único */
+.tabs-container:has(.tab-btn:only-child) .tab-btn:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: #fafafa;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

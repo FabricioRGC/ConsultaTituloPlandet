@@ -1,0 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.navbar-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1d4ed8;
+    text-decoration: none;
+    transition: color 0.2s;
+    margin: 0; /* Eliminar margen del h1 */
+    cursor: pointer;
+}
+
+.navbar-logo:hover {
+    color: #1e40af;
+}
+
+.navbar-user {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-info {
+    font-size: 0.875rem;
+    color: #374151;
+    background-color: #f3f4f6;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px;
+    margin: 0;
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+}
+
+.user-role {
+    color: #6b7280;
+}
+
+.btn-logout {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #dc2626;
+    color: white;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-logout:hover {
+    background-color: #b91c1c;
+}
