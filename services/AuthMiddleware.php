@@ -11,7 +11,7 @@ class AuthMiddleware {
     public static function requireLogin() {
         self::ensureSession();
         if (empty($_SESSION['usuario_id'])) {
-            header("Location: /ConsultaTituloPlandet-1/index.php");
+            header("Location: /ConsultaTituloPlandet/index.php");
             exit;
         }
     }
@@ -20,7 +20,7 @@ class AuthMiddleware {
         self::ensureSession();
 
         if (empty($_SESSION['usuario_id'])) {
-            header("Location: /ConsultaTituloPlandet-1/index.php");
+            header("Location: /ConsultaTituloPlandet/index.php");
             exit;
         }
 
@@ -31,7 +31,7 @@ class AuthMiddleware {
         }
 
         if (!in_array($userRole, $roles)) {
-            header("Location: /ConsultaTituloPlandet-1/index.php?action=dasboard");
+            header("Location: /ConsultaTituloPlandet/index.php?action=dasboard");
             exit;
         }
     }

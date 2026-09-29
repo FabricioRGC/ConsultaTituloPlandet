@@ -54,7 +54,7 @@ if (!$activeTab && !empty($tabs_permitidos)) {
 }
 ?>
 
-<link rel="stylesheet" href="/ConsultaTituloPlandet-1/styles/navtabs.css">
+<link rel="stylesheet" href="/ConsultaTituloPlandet/styles/navtabs.css">
 
 <div class="tabs-container">
     <?php foreach ($tabs_permitidos as $tab): ?>

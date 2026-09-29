@@ -7,7 +7,7 @@ $selectedSession = trim($_GET['session_token'] ?? '');
 $sessionDetails = $selectedSession !== '' ? $audit->getSessionActivities($selectedSession, 500) : [];
 ?>
 
-<link rel="stylesheet" href="/ConsultaTituloPlandet-1/styles/tab-adminAudit.css">
+<link rel="stylesheet" href="/ConsultaTituloPlandet/styles/tab-adminAudit.css">
 
 <div class="audit-page">
     <section class="audit-card">

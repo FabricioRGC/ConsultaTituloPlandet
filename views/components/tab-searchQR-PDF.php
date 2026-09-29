@@ -7,7 +7,7 @@ $controller = new DocumentController();
 $documents = $controller->getDocuments();
 $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') || !empty($_POST['fecha'] ?? '');
 ?>
-<link rel="stylesheet" href="/ConsultaTituloPlandet-1/styles/tab-searchQR-PDF.css">
+<link rel="stylesheet" href="/ConsultaTituloPlandet/styles/tab-searchQR-PDF.css">
 <div class="tab-searchqr sqr-container" id="searchQRTab">
 
     <!-- BUSQUEDA + LISTADO DE DOCUMENTOS -->
@@ -68,7 +68,7 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
                                 <td class="sqr-td-partida"><?= htmlspecialchars($row['partida']) ?></td>
                                 <td class="sqr-td-fecha"><?= htmlspecialchars($row['fecha']) ?></td>
                                 <td class="sqr-td-center">
-                                    <a href="/ConsultaTituloPlandet-1/view.php?id=<?= urlencode($row['unique_id'] ?? '') ?>"
+                                    <a href="/ConsultaTituloPlandet/view.php?id=<?= urlencode($row['unique_id'] ?? '') ?>"
                                         target="_blank"
                                         class="sqr-btn sqr-btn-info">
                                         Ver PDF
@@ -205,7 +205,7 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
     // ðŸ”¥ NUEVO: Pasar tab actual a JavaScript
     const CURRENT_TAB = "<?= $tabKey ?>";
     function trackEvent(action, module, description, metadata = {}) {
-        fetch('/ConsultaTituloPlandet-1/index.php?action=track_event', {
+        fetch('/ConsultaTituloPlandet/index.php?action=track_event', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action, module, description, metadata })
@@ -366,7 +366,7 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
             if (/^https?:\/\//i.test(normalized) || normalized.startsWith('/')) {
                 return normalized;
             }
-            return '/ConsultaTituloPlandet-1/' + normalized.replace(/^\/+/, '');
+            return '/ConsultaTituloPlandet/' + normalized.replace(/^\/+/, '');
         }
 
         function seleccionarDocumento(qrUrl, title, partida, uniqueId) {
@@ -386,7 +386,7 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
                 qrDisplay.src = normalizeQrPath(qrUrl);
                 qrDisplay.onerror = function() {
                     if (uniqueId) {
-                        qrDisplay.src = '/ConsultaTituloPlandet-1/qr_preview.php?uid=' + encodeURIComponent(uniqueId) + '&t=' + Date.now();
+                        qrDisplay.src = '/ConsultaTituloPlandet/qr_preview.php?uid=' + encodeURIComponent(uniqueId) + '&t=' + Date.now();
                     }
                 };
                 qrDisplay.style.display = 'block';

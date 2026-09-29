@@ -8,7 +8,7 @@ $error = isset($_GET['error']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plandet - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/x-icon" href="/ConsultaTituloPlandet-1/src/icon.svg">
+    <link rel="icon" type="image/x-icon" href="/ConsultaTituloPlandet/src/icon.svg">
     <style>
         .gradient-bg {
             background: linear-gradient(to bottom right, rgb(37, 99, 235), rgb(29, 78, 216));
@@ -73,7 +73,7 @@ $error = isset($_GET['error']);
                     </div>
                 <?php endif; ?>
 
-                <form action="/ConsultaTituloPlandet-1/index.php?action=login" method="POST" class="space-y-5" autocomplete="off">
+                <form action="/ConsultaTituloPlandet/index.php?action=login" method="POST" class="space-y-5" autocomplete="off">
                     <div>
                         <label for="name" class="block mb-2 text-gray-900 font-medium">
                             Correo o usuario

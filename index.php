@@ -60,19 +60,19 @@ switch ($action) {
             render_page(
                 __DIR__ . '/views/pages/dash_admin.php',
                 'Dashboard Admin',
-                ['/ConsultaTituloPlandet-1/styles/dasboard.css'],
+                ['/ConsultaTituloPlandet/styles/dasboard.css'],
                 true
             );
         } elseif ($rol === 'user') {
             render_page(
                 __DIR__ . '/views/pages/dash_locador.php',
                 'Dashboard User',
-                ['/ConsultaTituloPlandet-1/styles/dasboard.css'],
+                ['/ConsultaTituloPlandet/styles/dasboard.css'],
                 true
             );
         } else {
             session_destroy();
-            header("Location: /ConsultaTituloPlandet-1/index.php");
+            header("Location: /ConsultaTituloPlandet/index.php");
             exit;
         }
         break;
@@ -80,7 +80,7 @@ switch ($action) {
     default:
         // Si ya hay una sesión activa y entra a la raíz, redirigir directamente al dashboard por comodidad (UX)
         if (isset($_SESSION['usuario_id'])) {
-            header("Location: /ConsultaTituloPlandet-1/index.php?action=dashboard");
+            header("Location: /ConsultaTituloPlandet/index.php?action=dashboard");
             exit;
         }
         // Mostrar login SIN template

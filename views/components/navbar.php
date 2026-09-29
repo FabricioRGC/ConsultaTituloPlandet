@@ -2,7 +2,7 @@
 function render_navbar($rol = '', $nombre = '')
 {
 ?>
-    <link rel="stylesheet" href="/ConsultaTituloPlandet-1/styles/navbar.css">
+    <link rel="stylesheet" href="/ConsultaTituloPlandet/styles/navbar.css">
     <nav class="navbar">
         <h1 class="navbar-logo">
             Plandet
@@ -14,7 +14,7 @@ function render_navbar($rol = '', $nombre = '')
                 <span class="user-role">(<?php echo htmlspecialchars($rol); ?>)</span>
             </p>
 
-            <a href="/ConsultaTituloPlandet-1/index.php?action=logout" class="btn-logout">
+            <a href="/ConsultaTituloPlandet/index.php?action=logout" class="btn-logout">
                 Logout
             </a>
         </div>

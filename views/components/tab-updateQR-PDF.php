@@ -7,7 +7,7 @@ extract($data);
 $tabKey = 'updateQR-PDF';
 ?>
 
-<link rel="stylesheet" href="/ConsultaTituloPlandet-1/styles/tab-updateQR-PDF.css">
+<link rel="stylesheet" href="/ConsultaTituloPlandet/styles/tab-updateQR-PDF.css">
 
 <div class="upd-container" data-component="update-qr-pdf">
 

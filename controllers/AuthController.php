@@ -19,7 +19,7 @@ class AuthController {
 
     public function handleLogin() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /ConsultaTituloPlandet-1/index.php");
+            header("Location: /ConsultaTituloPlandet/index.php");
             exit;
         }
         if (session_status() !== PHP_SESSION_ACTIVE) session_start();
@@ -31,7 +31,7 @@ class AuthController {
         $sessionToken = session_id();
 
         if ($credential === '' || $password === '') {
-            header("Location: /ConsultaTituloPlandet-1/index.php?error=1");
+            header("Location: /ConsultaTituloPlandet/index.php?error=1");
             exit;
         }
 
@@ -40,7 +40,7 @@ class AuthController {
         if (!$user) {
             $email = filter_var($credential, FILTER_VALIDATE_EMAIL) ? $credential : null;
             $this->audit->logLogin(null, $email, 'failed', $ip, $userAgent, $sessionToken);
-            header("Location: /ConsultaTituloPlandet-1/index.php?error=1");
+            header("Location: /ConsultaTituloPlandet/index.php?error=1");
             exit;
         }
 
@@ -56,7 +56,7 @@ class AuthController {
         $this->audit->logLogin((int)$user['id'], $user['email'], 'success', $ip, $userAgent, $sessionToken);
         $this->audit->logActivity((int)$user['id'], 'LOGIN', 'AUTH', null, null, 'Inicio de sesion', null, $sessionToken);
 
-        header("Location: /ConsultaTituloPlandet-1/index.php?action=dasboard");
+        header("Location: /ConsultaTituloPlandet/index.php?action=dasboard");
         exit;
     }
 
@@ -81,7 +81,7 @@ class AuthController {
 
         session_destroy();
 
-        header("Location: /ConsultaTituloPlandet-1/index.php");
+        header("Location: /ConsultaTituloPlandet/index.php");
         exit;
     }
 }
