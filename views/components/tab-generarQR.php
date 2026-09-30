@@ -65,7 +65,7 @@ $fechaActual = date('Y-m-d');
                             <div class="form-group">
                                 <label for="fecha" class="form-label">Fecha de Emisión:</label>
                                 <input type="date" class="form-control" id="fecha" name="fecha"
-                                    value="<?= $fechaActual ?>" required>
+                                    value="<?= $fechaActual ?>" min="<?= date('Y-m-d'); ?>" required>
                                 <div class="invalid-feedback">Ingrese la fecha.</div>
                             </div>
 

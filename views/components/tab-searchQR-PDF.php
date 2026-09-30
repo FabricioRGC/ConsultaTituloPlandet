@@ -35,65 +35,74 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
             </button>
         </form>
 
-        <?php if (!empty($documents)): ?>
-            <div class="sqr-card-header">
-                <h3 class="sqr-card-title">Documentos Disponibles</h3>
-            </div>
-            <div class="sqr-table-wrapper">
-                <table class="sqr-table">
-                    <thead>
-                        <tr>
-                            <th class="sqr-th-select">Seleccionar</th>
-                            <th class="sqr-th-id">ID</th>
-                            <th class="sqr-th-title">Titulo</th>
-                            <th class="sqr-th-partida">Partida</th>
-                            <th class="sqr-th-fecha">Fecha</th>
-                            <th class="sqr-th-actions">PDF</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($documents as $row): ?>
-                            <tr class="sqr-tr">
-                                <td class="sqr-td-center">
-                                    <input type="radio"
-                                        name="search_selected_doc"
-                                        class="sqr-radio search-radio-doc"
-                                        data-qr="<?= htmlspecialchars($row['qr_code'], ENT_QUOTES) ?>"
-                                        data-title="<?= htmlspecialchars($row['title']) ?>"
-                                        data-partida="<?= htmlspecialchars($row['partida']) ?>"
-                                        data-uid="<?= htmlspecialchars($row['unique_id'] ?? '', ENT_QUOTES) ?>">
-                                </td>
-                                <td class="sqr-td-id"><?= (int)$row['id'] ?></td>
-                                <td class="sqr-td-title"><?= htmlspecialchars($row['title']) ?></td>
-                                <td class="sqr-td-partida"><?= htmlspecialchars($row['partida']) ?></td>
-                                <td class="sqr-td-fecha"><?= htmlspecialchars($row['fecha']) ?></td>
-                                <td class="sqr-td-center">
-                                    <a href="/ConsultaTituloPlandet/view.php?id=<?= urlencode($row['unique_id'] ?? '') ?>"
-                                        target="_blank"
-                                        class="sqr-btn sqr-btn-info">
-                                        Ver PDF
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php else: ?>
-            <div class="sqr-empty-state">
-                <div class="sqr-empty-icon">-</div>
-                <?php if ($hasFilters): ?>
-                    <p class="sqr-empty-text">No se encontraron documentos con esos filtros.</p>
-                    <form method="get" action="" style="margin-top: 0.75rem;">
-                        <input type="hidden" name="action" value="dasboard">
-                        <input type="hidden" name="tab" value="<?= htmlspecialchars($tabKey) ?>">
-                        <button type="submit" class="sqr-btn sqr-btn-secondary">Limpiar busqueda</button>
-                    </form>
-                <?php else: ?>
-                    <p class="sqr-empty-text">No hay documentos registrados.</p>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
+       <?php if (!empty($documents)): ?>
+    <div class="sqr-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 class="sqr-card-title" style="margin: 0;">Documentos Disponibles</h3>
+        
+        <!-- Minifiltro de ordenamiento elegante -->
+        <form method="GET" action="" id="sortForm" style="margin: 0;">
+            <input type="hidden" name="action" value="dasboard">
+            <input type="hidden" name="tab" value="<?= htmlspecialchars($tabKey ?? 'buscarQR') ?>">
+            <?php if (!empty($_GET['search_title'])): ?>
+                <input type="hidden" name="search_title" value="<?= htmlspecialchars($_GET['search_title']) ?>">
+            <?php endif; ?>
+            <?php if (!empty($_GET['search_partida'])): ?>
+                <input type="hidden" name="search_partida" value="<?= htmlspecialchars($_GET['search_partida']) ?>">
+            <?php endif; ?>
+
+            <select name="sort_order" class="sqr-input" style="padding: 4px 10px; font-size: 13px; width: auto; display: inline-block;" onchange="this.form.submit()">
+                <option value="DESC" <?= (($_GET['sort_order'] ?? 'DESC') === 'DESC') ? 'selected' : '' ?>>⬇️ Últimos registrados primero</option>
+                <option value="ASC" <?= (($_GET['sort_order'] ?? '') === 'ASC') ? 'selected' : '' ?>>⬆️ Primeros registrados primero</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="sqr-table-wrapper">
+        <table class="sqr-table">
+            <thead>
+                <tr>
+                    <th class="sqr-th-select">Seleccionar</th>
+                    <th class="sqr-th-id">ID</th>
+                    <th class="sqr-th-title">Titulo</th>
+                    <th class="sqr-th-partida">Partida</th>
+                    <th class="sqr-th-fecha">Fecha</th>
+                    <th class="sqr-th-actions">PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($documents as $row): ?>
+                    <tr class="sqr-tr">
+                        <td class="sqr-td-center">
+                            <input type="radio"
+                                name="search_selected_doc"
+                                class="sqr-radio search-radio-doc"
+                                data-qr="<?= htmlspecialchars($row['qr_code'], ENT_QUOTES) ?>"
+                                data-title="<?= htmlspecialchars($row['title']) ?>"
+                                data-partida="<?= htmlspecialchars($row['partida']) ?>"
+                                data-uid="<?= htmlspecialchars($row['unique_id'] ?? '', ENT_QUOTES) ?>">
+                        </td>
+                        <td class="sqr-td-id"><?= (int)$row['id'] ?></td>
+                        <td class="sqr-td-title"><?= htmlspecialchars($row['title']) ?></td>
+                        <td class="sqr-td-partida"><?= htmlspecialchars($row['partida']) ?></td>
+                        <td class="sqr-td-fecha"><?= htmlspecialchars($row['fecha']) ?></td>
+                        <td class="sqr-td-center">
+                            <a href="/ConsultaTituloPlandet/view.php?id=<?= urlencode($row['unique_id'] ?? '') ?>"
+                                target="_blank"
+                                class="sqr-btn sqr-btn-info">
+                                Ver PDF
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+<?php else: ?>
+    <div class="sqr-empty-state">
+        <div class="sqr-empty-icon">-</div>
+        <p class="sqr-empty-text">No se encontraron documentos registrados.</p>
+    </div>
+<?php endif; ?>
     </div>
     <!-- VISUALIZACION QR Y PARTIDA -->
     <div class="sqr-card sqr-preview-card">
