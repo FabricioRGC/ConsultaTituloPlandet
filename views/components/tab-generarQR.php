@@ -42,7 +42,7 @@ $fechaActual = date('Y-m-d');
                     <section class="card">
                         <h2 class="card-title">📤 Subir PDF</h2>
 
-                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate
+                        <form id="formGenerarQR" method="post" enctype="multipart/form-data" class="needs-validation" novalidate
                             action="?action=dasboard&tab=<?= urlencode($tabKey) ?>">
 
                             <button id="clearForm" type="button" class="btn-action btn-clear-form form-clear-btn">
@@ -269,6 +269,10 @@ $fechaActual = date('Y-m-d');
     }
 
     function validarYSubir(form) {
+    // 🛡️ CANDADO DE DUPLICIDAD: Si ya se está procesando, bloqueamos clics extra
+    if (form.dataset.submitting === 'true') return;
+    form.dataset.submitting = 'true';
+
     // 1. Capturar los campos
     const titulo = document.getElementById('title');
     const partida = document.getElementById('partida');
@@ -278,26 +282,28 @@ $fechaActual = date('Y-m-d');
     if (titulo && titulo.value.trim() === '') {
         showToast('Por favor, ingresa el nombre del título.', 'error');
         titulo.focus();
+        form.dataset.submitting = 'false'; // Liberamos el candado si falla
         return;
     }
 
     if (partida && partida.value.trim() === '') {
         showToast('Por favor, ingresa la partida electrónica.', 'error');
         partida.focus();
+        form.dataset.submitting = 'false';
         return;
     }
 
     if (archivo && archivo.files.length === 0) {
         showToast('Por favor, selecciona un archivo PDF válido.', 'error');
+        form.dataset.submitting = 'false';
         return;
     }
 
-    // 3. Capturar los valores para mostrarlos en la ventana de confirmación
     const valorTitulo = titulo.value.trim();
     const valorPartida = partida.value.trim();
     const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
 
-    // 4. Mostrar la ventana elegante con el resumen para verificar
+    // 3. Mostrar la ventana de confirmación de SweetAlert2
     Swal.fire({
         title: 'Verifica los datos de envío',
         html: `
@@ -307,24 +313,17 @@ $fechaActual = date('Y-m-d');
             <p style="margin: 4px 0;"><strong>Archivo:</strong> ${nombreArchivo}</p>
         </div>
         <p style="margin-top: 12px; font-size: 14px;">¿Deseas proceder con la subida?</p>
-    `,
+        `,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#2563eb', // Azul corporativo
-        cancelButtonColor: '#dc2626', // Rojo cancelar
+        confirmButtonColor: '#2563eb',
+        cancelButtonColor: '#dc2626',
         confirmButtonText: 'Sí, subir archivo',
         cancelButtonText: 'Revisar',
-        allowOutsideClick: false // Evita que se cierre haciendo clic fuera por error
+        allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
-            // 🔥 BLOQUEO DE DOBLE ENVÍO: Desactivar el botón del formulario visualmente
-            const btnSubmit = form.querySelector('.btn-submit');
-            if (btnSubmit) {
-                btnSubmit.disabled = true;
-                btnSubmit.innerHTML = '⏳ Subiendo...';
-            }
-
-            // Mostrar una alerta de carga de SweetAlert para bloquear la interfaz
+            // Mostrar alerta de carga bloqueante
             Swal.fire({
                 title: 'Subiendo archivo...',
                 text: 'Por favor espere un momento.',
@@ -334,11 +333,32 @@ $fechaActual = date('Y-m-d');
                 }
             });
 
-            form.submit(); // Envía el formulario una sola vez de forma segura
+            // Creamos un FormData con los datos del formulario
+            const formData = new FormData(form);
+
+            // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
+                } else {
+                    Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
+                    form.dataset.submitting = 'false';
+                }
+            })
+            .catch(error => {
+                Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
+                form.dataset.submitting = 'false';
+            });
+        } else {
+            // Si el usuario hace clic en "Revisar", liberamos el candado
+            form.dataset.submitting = 'false';
         }
     });
 }
-
     function mostrarHistorialHoy() {
         if (!enviosHoy || enviosHoy.length === 0) {
             Swal.fire({

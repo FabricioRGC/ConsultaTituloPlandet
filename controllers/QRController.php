@@ -8,6 +8,7 @@ class QRController
 {
     public function generar()
     {
+        error_log("--- ENTRÓ A GENERAR() --- " . date('H:i:s'));
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
         if (!isset($_FILES['pdf'])) return;
 
