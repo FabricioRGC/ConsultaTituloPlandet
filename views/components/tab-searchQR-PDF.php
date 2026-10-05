@@ -5,6 +5,18 @@ $tabKey = 'searchQR-PDF';
 
 $controller = new DocumentController();
 $documents = $controller->getDocuments();
+$currentMonthYear = date('Y-m'); // Formato "2026-10"
+$totalMes = 0;
+foreach ($documents as $doc) {
+    // Tomamos la fecha válida (evaluando fecha o created igual que en tu tabla)
+    $fechaDoc = (!empty($doc['fecha']) && strpos($doc['fecha'], '00:00:00') === false)
+        ? $doc['fecha']
+        : ($doc['created'] ?? '');
+
+    if (!empty($fechaDoc) && strpos($fechaDoc, $currentMonthYear) === 0) {
+        $totalMes++;
+    }
+}
 $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') || !empty($_POST['fecha'] ?? '');
 ?>
 <link rel="stylesheet" href="/ConsultaTituloPlandet/styles/tab-searchQR-PDF.css">
@@ -35,189 +47,245 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
             </button>
         </form>
 
-       <?php if (!empty($documents)): ?>
-    <div class="sqr-card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 class="sqr-card-title" style="margin: 0;">Documentos Disponibles</h3>
-        
-        <!-- Minifiltro de ordenamiento elegante -->
-        <form method="GET" action="" id="sortForm" style="margin: 0;">
-            <input type="hidden" name="action" value="dasboard">
-            <input type="hidden" name="tab" value="<?= htmlspecialchars($tabKey ?? 'buscarQR') ?>">
-            <?php if (!empty($_GET['search_title'])): ?>
-                <input type="hidden" name="search_title" value="<?= htmlspecialchars($_GET['search_title']) ?>">
-            <?php endif; ?>
-            <?php if (!empty($_GET['search_partida'])): ?>
-                <input type="hidden" name="search_partida" value="<?= htmlspecialchars($_GET['search_partida']) ?>">
-            <?php endif; ?>
+        <?php if (!empty($documents)): ?>
+            <!-- 1. Cabecera y el minifiltro de orden -->
+            <div class="sqr-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="sqr-card-title" style="margin: 0;">Documentos Disponibles</h3>
 
-            <select name="sort_order" class="sqr-input" style="padding: 4px 10px; font-size: 13px; width: auto; display: inline-block;" onchange="this.form.submit()">
-                <option value="DESC" <?= (($_GET['sort_order'] ?? 'DESC') === 'DESC') ? 'selected' : '' ?>>⬇️ Últimos registrados primero</option>
-                <option value="ASC" <?= (($_GET['sort_order'] ?? '') === 'ASC') ? 'selected' : '' ?>>⬆️ Primeros registrados primero</option>
-            </select>
-        </form>
-    </div>
-
-    <div class="sqr-table-wrapper">
-        <table class="sqr-table">
-            <thead>
-                <tr>
-                    <th class="sqr-th-select">Seleccionar</th>
-                    <th class="sqr-th-id">ID</th>
-                    <th class="sqr-th-title">Titulo</th>
-                    <th class="sqr-th-partida">Partida</th>
-                    <th class="sqr-th-fecha">Fecha</th>
-                    <th class="sqr-th-actions">PDF</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($documents as $row): ?>
-                    <tr class="sqr-tr">
-                        <td class="sqr-td-center">
-                            <input type="radio"
-                                name="search_selected_doc"
-                                class="sqr-radio search-radio-doc"
-                                data-qr="<?= htmlspecialchars($row['qr_code'], ENT_QUOTES) ?>"
-                                data-title="<?= htmlspecialchars($row['title']) ?>"
-                                data-partida="<?= htmlspecialchars($row['partida']) ?>"
-                                data-uid="<?= htmlspecialchars($row['unique_id'] ?? '', ENT_QUOTES) ?>">
-                        </td>
-                        <td class="sqr-td-id"><?= (int)$row['id'] ?></td>
-                        <td class="sqr-td-title"><?= htmlspecialchars($row['title']) ?></td>
-                        <td class="sqr-td-partida"><?= htmlspecialchars($row['partida']) ?></td>
-                        <td class="sqr-td-fecha"><?= htmlspecialchars($row['fecha']) ?></td>
-                        <td class="sqr-td-center">
-                            <a href="/ConsultaTituloPlandet/view.php?id=<?= urlencode($row['unique_id'] ?? '') ?>"
-                                target="_blank"
-                                class="sqr-btn sqr-btn-info">
-                                Ver PDF
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-<?php else: ?>
-    <div class="sqr-empty-state">
-        <div class="sqr-empty-icon">-</div>
-        <p class="sqr-empty-text">No se encontraron documentos registrados.</p>
-    </div>
-<?php endif; ?>
-    </div>
-    <!-- VISUALIZACION QR Y PARTIDA -->
-    <div class="sqr-card sqr-preview-card">
-        <div class="sqr-card-header">
-            <h3 class="sqr-card-title">Previsualizacion</h3>
-        </div>
-        <div class="sqr-preview-grid">
-            <div class="sqr-qr-section">
-                <h4 class="sqr-section-title">Codigo QR</h4>
-                <div class="sqr-qr-display">
-                    <img id="search-qrDisplay" src="" alt="Codigo QR" class="sqr-qr-image">
-                    <div class="sqr-qr-placeholder" id="search-qrPlaceholder">
-                        <span>QR</span>
-                        <p>Selecciona un documento</p>
+                <form method="GET" action="" id="sortForm" style="margin: 0; display: inline-block;">
+                    <input type="hidden" name="action" value="dashboard">
+                    <input type="hidden" name="tab" value="<?= htmlspecialchars($_GET['tab'] ?? 'buscarQR') ?>">
+                    <?php if (!empty($_GET['title'])): ?>
+                        <input type="hidden" name="title" value="<?= htmlspecialchars($_GET['title']) ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($_GET['partida'])): ?>
+                        <input type="hidden" name="partida" value="<?= htmlspecialchars($_GET['partida']) ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($_GET['fecha'])): ?>
+                        <input type="hidden" name="fecha" value="<?= htmlspecialchars($_GET['fecha']) ?>">
+                    <?php endif; ?>
+                    <div style="display: inline-flex; align-items: center; background: #ffffff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 4px 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                        <span style="font-size: 13px; margin-right: 6px;">⏳</span>
+                        <select name="sort_order" id="sort_order_select" style="font-size: 13px; font-weight: 600; color: #1e293b; background: transparent; border: none; outline: none; cursor: pointer; padding-right: 4px;" onchange="this.form.submit()">
+                            <option value="DESC" <?= (($_GET['sort_order'] ?? 'DESC') === 'DESC') ? 'selected' : '' ?>>⬇️ Últimos registrados</option>
+                            <option value="ASC" <?= (($_GET['sort_order'] ?? '') === 'ASC') ? 'selected' : '' ?>>⬆️ Primeros registrados</option>
+                        </select>
                     </div>
-                </div>
+                </form>
             </div>
+            <div class="sqr-table-wrapper">
+                <table class="sqr-table">
+                    <thead>
+                        <tr>
+                            <th class="sqr-th-select">Seleccionar</th>
+                            <th class="sqr-th-id">ID</th>
+                            <th class="sqr-th-title">Titulo</th>
+                            <th class="sqr-th-partida">Partida</th>
+                            <th class="sqr-th-fecha">Fecha</th>
+                            <th class="sqr-th-actions">PDF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($documents as $row): ?>
+                            <tr class="sqr-tr">
+                                <td class="sqr-td-center">
+                                    <input type="radio"
+                                        name="search_selected_doc"
+                                        class="sqr-radio search-radio-doc"
+                                        data-qr="<?= htmlspecialchars($row['qr_code'], ENT_QUOTES) ?>"
+                                        data-title="<?= htmlspecialchars($row['title']) ?>"
+                                        data-partida="<?= htmlspecialchars($row['partida']) ?>"
+                                        data-uid="<?= htmlspecialchars($row['unique_id'] ?? '', ENT_QUOTES) ?>">
+                                </td>
+                                <td class="sqr-td-id"><?= (int)$row['id'] ?></td>
+                                <td class="sqr-td-title"><?= htmlspecialchars($row['title']) ?></td>
+                                <td class="sqr-td-partida"><?= htmlspecialchars($row['partida']) ?></td>
+                                <td class="sqr-td-fecha">
+                                    <?php
+                                    // Si la fecha tiene hora válida la usamos, de lo contrario usamos 'created'
+                                    $fechaMostrar = (!empty($row['fecha']) && strpos($row['fecha'], '00:00:00') === false)
+                                        ? $row['fecha']
+                                        : ($row['created'] ?? '');
 
-            <div class="sqr-partida-section">
-
-                <h4 class="sqr-section-title">Nombre del Titulo</h4>
-                <input type="text"
-                    id="search-number-titulo"
-                    maxlength="50"
-                    class="sqr-input sqr-input-large"
-                    placeholder="Ingrese el nombre del titulo">
-
-                <h4 class="sqr-section-title">Partida Electronica</h4>
-                <input type="text"
-                    id="search-partida-input"
-                    class="sqr-input sqr-input-large"
-                    placeholder="Ingrese la partida electronica">
-
-                <div class="sqr-checkboxes">
-                    <label class="sqr-checkbox-label">
-                        <input type="checkbox" id="search-chkQR" class="sqr-checkbox" checked>
-                        <span>Incluir QR</span>
-                    </label>
-                    <label class="sqr-checkbox-label">
-                        <input type="checkbox" id="search-chkPartida" class="sqr-checkbox" checked>
-                        <span>Incluir Partida Electronica</span>
-                    </label>
+                                    echo !empty($fechaMostrar) ? date('d/m/Y h:i A', strtotime($fechaMostrar)) : '-';
+                                    ?>
+                                </td>
+                                <td class="sqr-td-center">
+                                    <a href="/ConsultaTituloPlandet/view.php?id=<?= urlencode($row['unique_id'] ?? '') ?>"
+                                        target="_blank"
+                                        class="sqr-btn sqr-btn-info">
+                                        Ver PDF
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php else: ?>
+            <div class="sqr-empty-state">
+                <div class="sqr-empty-icon">-</div>
+                <p class="sqr-empty-text">No se encontraron documentos registrados.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+    <!-- 🌟 Notificación flotante elegante del resumen del mes -->
+    <div id="monthlyModalToast" style="position: fixed; bottom: 30px; right: 30px; background: #ffffff; border-left: 5px solid #7c3aed; box-shadow: 0 10px 25px rgba(0,0,0,0.15); padding: 16px 20px; border-radius: 10px; display: flex; align-items: center; gap: 14px; z-index: 9999; opacity: 0; transform: translateY(20px); transition: all 0.4s ease;">
+        <div style="background: #ede9fe; color: #7c3aed; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold;">
+            📊
+        </div>
+        <h4 style="margin: 0; font-size: 14px; color: #1e293b; font-weight: 700;">Resumen del Mes</h4>
+        <p style="margin: 2px 0 0 0; font-size: 13px; color: #64748b;">
+            Este mes se han agregado <strong style="color: #7c3aed;"><?= $totalMes ?></strong> documentos.
+        </p>
+    </div>
+    <button onclick="closeMonthlyToast()" style="background: transparent; border: none; font-size: 16px; color: #94a3b8; cursor: pointer; margin-left: 10px; padding: 0;">&times;</button>
+</div>
+<!-- VISUALIZACION QR Y PARTIDA -->
+<div class="sqr-card sqr-preview-card">
+    <div class="sqr-card-header">
+        <h3 class="sqr-card-title">Previsualizacion</h3>
+    </div>
+    <div class="sqr-preview-grid">
+        <div class="sqr-qr-section">
+            <h4 class="sqr-section-title">Codigo QR</h4>
+            <div class="sqr-qr-display">
+                <img id="search-qrDisplay" src="" alt="Codigo QR" class="sqr-qr-image">
+                <div class="sqr-qr-placeholder" id="search-qrPlaceholder">
+                    <span>QR</span>
+                    <p>Selecciona un documento</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- CONFIGURACION DE POSICIONES -->
-    <div class="sqr-card sqr-position-card">
-        <div class="sqr-card-header">
-            <h3 class="sqr-card-title">Configuracion de Posiciones en PDF</h3>
-        </div>
-        <div class="sqr-position-grid">
-            <div class="sqr-position-group">
-                <h5 class="sqr-group-title">Posicion del QR</h5>
-                <div class="sqr-input-row">
-                    <div class="sqr-input-group">
-                        <label class="sqr-label">Posicion X</label>
-                        <input type="number" id="search-qr-x" value="0.75" step="0.1" class="sqr-input">
-                    </div>
-                    <div class="sqr-input-group">
-                        <label class="sqr-label">Posicion Y</label>
-                        <input type="number" id="search-qr-y" value="2.1" step="0.1" class="sqr-input">
-                    </div>
-                </div>
-            </div>
+        <div class="sqr-partida-section">
 
-            <div class="sqr-position-group">
-                <h5 class="sqr-group-title">Posicion del Numero</h5>
-                <div class="sqr-input-row">
-                    <div class="sqr-input-group">
-                        <label class="sqr-label">Posicion X</label>
-                        <input type="number" id="search-num-x" value="2.20" step="0.1" class="sqr-input">
-                    </div>
-                    <div class="sqr-input-group">
-                        <label class="sqr-label">Posicion Y</label>
-                        <input type="number" id="search-num-y" value="1.43" step="0.1" class="sqr-input">
-                    </div>
-                </div>
-            </div>
-            <div class="sqr-export-content">
-                <div class="sqr-actions">
-                    <button id="search-preview-button" class="sqr-btn sqr-btn-secondary">
-                        Previsualizar PDF
-                    </button>
-                    <button id="search-export-button" class="sqr-btn sqr-btn-primary">
-                        Exportar a PDF
-                    </button>
-                </div>
+            <h4 class="sqr-section-title">Nombre del Titulo</h4>
+            <input type="text"
+                id="search-number-titulo"
+                maxlength="50"
+                class="sqr-input sqr-input-large"
+                placeholder="Ingrese el nombre del titulo">
+
+            <h4 class="sqr-section-title">Partida Electronica</h4>
+            <input type="text"
+                id="search-partida-input"
+                class="sqr-input sqr-input-large"
+                placeholder="Ingrese la partida electronica">
+
+            <div class="sqr-checkboxes">
+                <label class="sqr-checkbox-label">
+                    <input type="checkbox" id="search-chkQR" class="sqr-checkbox" checked>
+                    <span>Incluir QR</span>
+                </label>
+                <label class="sqr-checkbox-label">
+                    <input type="checkbox" id="search-chkPartida" class="sqr-checkbox" checked>
+                    <span>Incluir Partida Electronica</span>
+                </label>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- PREVIEW PDF -->
-    <div class="sqr-preview-wrapper" id="search-previewWrapper" style="display:none;">
-        <div class="sqr-preview-header">
-            <h3>Vista Previa del PDF</h3>
-            <button class="sqr-btn sqr-btn-close" id="search-closePreview">
-                âœ– Cerrar
-            </button>
-        </div>
-        <iframe id="search-pdfPreview" class="sqr-pdf-frame"></iframe>
+<!-- CONFIGURACION DE POSICIONES -->
+<div class="sqr-card sqr-position-card">
+    <div class="sqr-card-header">
+        <h3 class="sqr-card-title">Configuracion de Posiciones en PDF</h3>
     </div>
+    <div class="sqr-position-grid">
+        <div class="sqr-position-group">
+            <h5 class="sqr-group-title">Posicion del QR</h5>
+            <div class="sqr-input-row">
+                <div class="sqr-input-group">
+                    <label class="sqr-label">Posicion X</label>
+                    <input type="number" id="search-qr-x" value="0.75" step="0.1" class="sqr-input">
+                </div>
+                <div class="sqr-input-group">
+                    <label class="sqr-label">Posicion Y</label>
+                    <input type="number" id="search-qr-y" value="2.1" step="0.1" class="sqr-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="sqr-position-group">
+            <h5 class="sqr-group-title">Posicion del Numero</h5>
+            <div class="sqr-input-row">
+                <div class="sqr-input-group">
+                    <label class="sqr-label">Posicion X</label>
+                    <input type="number" id="search-num-x" value="2.20" step="0.1" class="sqr-input">
+                </div>
+                <div class="sqr-input-group">
+                    <label class="sqr-label">Posicion Y</label>
+                    <input type="number" id="search-num-y" value="1.43" step="0.1" class="sqr-input">
+                </div>
+            </div>
+        </div>
+        <div class="sqr-export-content">
+            <div class="sqr-actions">
+                <button id="search-preview-button" class="sqr-btn sqr-btn-secondary">
+                    Previsualizar PDF
+                </button>
+                <button id="search-export-button" class="sqr-btn sqr-btn-primary">
+                    Exportar a PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PREVIEW PDF -->
+<div class="sqr-preview-wrapper" id="search-previewWrapper" style="display:none;">
+    <div class="sqr-preview-header">
+        <h3>Vista Previa del PDF</h3>
+        <button class="sqr-btn sqr-btn-close" id="search-closePreview">
+            âœ– Cerrar
+        </button>
+    </div>
+    <iframe id="search-pdfPreview" class="sqr-pdf-frame"></iframe>
+</div>
 
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const toast = document.getElementById('monthlyModalToast');
+        if(toast) {
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 500);
+
+            // Se oculta automáticamente a los 6 segundos
+            setTimeout(() => {
+                closeMonthlyToast();
+            }, 6000);
+        }
+    });
+
+    function closeMonthlyToast() {
+        const toast = document.getElementById('monthlyModalToast');
+        if(toast) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => toast.remove(), 400);
+        }
+    }
     // ðŸ”¥ NUEVO: Pasar tab actual a JavaScript
     const CURRENT_TAB = "<?= $tabKey ?>";
+
     function trackEvent(action, module, description, metadata = {}) {
         fetch('/ConsultaTituloPlandet/index.php?action=track_event', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action, module, description, metadata })
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action,
+                module,
+                description,
+                metadata
+            })
         }).catch(() => {});
     }
 
@@ -313,7 +381,9 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
                         const titulo = document.getElementById('search-number-titulo').value.trim() || 'SIN-TITULO';
                         const doc = await generatePDF();
                         doc.save(`${titulo}.pdf`);
-                        trackEvent('DOWNLOAD_PDF', 'DOCUMENT', 'Descarga de PDF desde Buscar QR/PDF', { titulo });
+                        trackEvent('DOWNLOAD_PDF', 'DOCUMENT', 'Descarga de PDF desde Buscar QR/PDF', {
+                            titulo
+                        });
                         console.log('SearchQR: PDF exportado');
                     } catch (error) {
                         console.error('SearchQR: Error al exportar PDF:', error);

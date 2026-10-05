@@ -26,51 +26,60 @@ class DocumentModel
         return $stmt->execute([$partida, $title, $pdfPath, $qrPath, $uniqueId]);
     }
 
-    public function getAll()
-    {
-        $stmt = $this->db->query("SELECT * FROM documents ORDER BY id ASC");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function getAll($sortOrder = 'DESC')
+{
+    // Validación de seguridad para el orden
+    $sortOrder = (strtoupper($sortOrder) === 'ASC') ? 'ASC' : 'DESC';
+
+    $sql = "SELECT * FROM documents ORDER BY id " . $sortOrder;
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function search($titulo = '', $partida = '', $fecha = '', $sortOrder = 'DESC')
+{
+    // Validación de seguridad para el orden
+    $sortOrder = (strtoupper($sortOrder) === 'ASC') ? 'ASC' : 'DESC';
+
+    if (empty($titulo) && empty($partida) && empty($fecha)) {
+        return $this->getAll($sortOrder);
     }
 
-    public function search($titulo = '', $partida = '', $fecha = '')
-    {
-        if (empty($titulo) && empty($partida) && empty($fecha)) {
-            return $this->getAll();
-        }
+    $conditions = [];
+    $params = [];
 
-        $conditions = [];
-        $params = [];
-
-        if (!empty($titulo)) {
-            $conditions[] = "title LIKE ?";
-            $params[] = "%{$titulo}%";
-        }
-
-        if (!empty($partida)) {
-            $conditions[] = "partida LIKE ?";
-            $params[] = "%{$partida}%";
-        }
-
-        if (!empty($fecha)) {
-            if ($this->hasColumn('fecha')) {
-                $conditions[] = "DATE(fecha) = ?";
-                $params[] = $fecha;
-            } elseif ($this->hasColumn('created')) {
-                $conditions[] = "DATE(created) = ?";
-                $params[] = $fecha;
-            }
-        }
-
-        if (empty($conditions)) {
-            return $this->getAll();
-        }
-
-        $sql = "SELECT * FROM documents WHERE " . implode(' AND ', $conditions) . " ORDER BY id ASC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!empty($titulo)) {
+        $conditions[] = "title LIKE ?";
+        $params[] = "%{$titulo}%";
     }
+
+    if (!empty($partida)) {
+        $conditions[] = "partida LIKE ?";
+        $params[] = "%{$partida}%";
+    }
+
+    if (!empty($fecha)) {
+        if ($this->hasColumn('fecha')) {
+            $conditions[] = "DATE(fecha) = ?";
+            $params[] = $fecha;
+        } elseif ($this->hasColumn('created')) {
+            $conditions[] = "DATE(created) = ?";
+            $params[] = $fecha;
+        }
+    }
+
+    if (empty($conditions)) {
+        return $this->getAll($sortOrder);
+    }
+
+    // 🔥 Aplicamos la variable $sortOrder de forma dinámica y segura al final del SQL
+    $sql = "SELECT * FROM documents WHERE " . implode(' AND ', $conditions) . " ORDER BY id " . $sortOrder;
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     public function searchDocuments(string $numero, string $year): array
     {

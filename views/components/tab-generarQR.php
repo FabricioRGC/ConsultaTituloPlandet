@@ -478,28 +478,28 @@ $fechaActual = date('Y-m-d');
     // CARGA Y PREVISUALIZACIÓN DEL PDF
     // ================================
     pdfInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file && file.type === 'application/pdf') {
-            const fileName = file.name.replace(/\.pdf$/i, '');
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') {
+        const fileName = file.name.replace(/\.pdf$/i, '');
 
-            if (!titleInput.value) {
-                titleInput.value = fileName;
-                localStorage.setItem('qr_form_title', fileName);
-            }
-            if (!tituloNumberInput.value) {
-                tituloNumberInput.value = fileName;
-            }
+        // 🔥 MODIFICADO: Se actualiza siempre, ignorando si ya tenía texto
+        titleInput.value = fileName;
+        localStorage.setItem('qr_form_title', fileName);
 
-            const fileURL = URL.createObjectURL(file);
-            // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
-            pdfViewer.src = fileURL + '#toolbar=1&navpanes=0&scrollbar=1';
-
-            showToast("PDF cargado correctamente", "success");
-        } else {
-            showToast('Por favor, selecciona un archivo PDF válido.', "danger");
-            pdfInput.value = "";
+        if (!tituloNumberInput.value) {
+            tituloNumberInput.value = fileName;
         }
-    });
+
+        const fileURL = URL.createObjectURL(file);
+        // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
+        pdfViewer.src = fileURL + '#toolbar=1&navpanes=0&scrollbar=1';
+
+        showToast("PDF cargado correctamente", "success");
+    } else {
+        showToast('Por favor, selecciona un archivo PDF válido.', "danger");
+        pdfInput.value = "";
+    }
+});
 
     // ================================
     // CARGA MANUAL DE QR

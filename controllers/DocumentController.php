@@ -20,36 +20,45 @@ class DocumentController
      * ÚNICO método que usa el componente
      */
     public function getDocuments()
-    {
-        $titulo  = $_POST['title']   ?? '';
-        $partida = $_POST['partida'] ?? '';
-        $fecha   = $_POST['fecha']   ?? '';
+{
+    // 1. Capturamos los filtros (tanto de POST como de GET por si se recarga con el orden)
+    $titulo  = $_POST['title']   ?? $_GET['title']   ?? '';
+    $partida = $_POST['partida'] ?? $_GET['partida'] ?? '';
+    $fecha   = $_POST['fecha']   ?? $_GET['fecha']   ?? '';
+    
+    // 🔥 Capturamos el parámetro de ordenamiento (por defecto DESC)
+    $sortOrder = $_GET['sort_order'] ?? 'DESC';
 
-        $results = $this->model->search($titulo, $partida, $fecha);
+    // 2. Ejecutamos la búsqueda en el modelo pasándole el orden
+    // (Asegúrate de usar la misma forma en la que llamas a tu modelo, por ejemplo $this->DocumentModel o $this->model)
+    $results = $this->model->search($titulo, $partida, $fecha, $sortOrder);
 
-        if (session_status() !== PHP_SESSION_ACTIVE) session_start();
-        $hasFilters = ($titulo !== '' || $partida !== '' || $fecha !== '');
-        if ($hasFilters) {
-            $audit = new AuditModel();
-            $audit->logActivity(
-                (int)($_SESSION['usuario_id'] ?? 0),
-                'SEARCH_DOCUMENTS',
-                'DOCUMENT',
-                'documents',
-                null,
-                'Busqueda de documentos',
-                [
-                    'title' => $titulo,
-                    'partida' => $partida,
-                    'fecha' => $fecha,
-                    'results' => is_array($results) ? count($results) : 0
-                ],
-                $_SESSION['audit_session_token'] ?? session_id()
-            );
-        }
-
-        return $results;
+    // 3. Registro de auditoría si hay filtros activos
+    if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+    $hasFilters = ($titulo !== '' || $partida !== '' || $fecha !== '');
+    
+    if ($hasFilters) {
+        $audit = new AuditModel();
+        $audit->logActivity(
+            (int)($_SESSION['usuario_id'] ?? 0),
+            'SEARCH_DOCUMENTS',
+            'DOCUMENT',
+            'documents',
+            null,
+            'Busqueda de documentos',
+            [
+                'title' => $titulo,
+                'partida' => $partida,
+                'fecha' => $fecha,
+                'sort_order' => $sortOrder,
+                'results' => is_array($results) ? count($results) : 0
+            ],
+            $_SESSION['audit_session_token'] ?? session_id()
+        );
     }
+
+    return $results;
+}
 
     public function handleUpdateQRPDF(): array
     {
