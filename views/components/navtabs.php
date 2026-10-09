@@ -30,12 +30,6 @@ $tabs = [
         "roles" => ["admin", "user"]
     ],
     [
-        "key" => "generarTitulo",
-        "label" => "Generar Titulo",
-        "color" => "purple",
-        "roles" => ["admin", "user"]
-    ],
-    [
         "key" => "adminAudit",
         "label" => "Panel Admin",
         "color" => "green",
