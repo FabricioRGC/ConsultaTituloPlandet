@@ -35,7 +35,7 @@ $fechaActual = date('Y-m-d');
 <div class="tab-generarQR">
     <div class="main-container">
         <div class="content-wrapper">
-            
+
             <!-- PANEL IZQUIERDO -->
             <aside class="left-panel">
                 <div class="left-panel-scroll">
@@ -58,8 +58,8 @@ $fechaActual = date('Y-m-d');
                             <div class="form-group">
                                 <label for="partida" class="form-label">Partida Electrónica:</label>
                                 <input type="text" class="form-control" id="partida" name="partida"
-                                    placeholder="Ingrese la partida electrónica" required>
-                                <div class="invalid-feedback">Ingrese la partida.</div>
+                                    maxlength="9" pattern="([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})" title="Debe contener 8 números (sin empezar en 0) o 1 letra seguida de 8 números" placeholder="P12345678 o 12345678" required>
+                                <div class="invalid-feedback">El formato debe ser 1 letra y 8 números exactos.</div>
                             </div>
 
                             <div class="form-group">
@@ -77,7 +77,7 @@ $fechaActual = date('Y-m-d');
                             </div>
 
                             <div style="display: flex; gap: 8px; margin-top: 15px;">
-                                <button type="button" class="btn btn-submit" onclick="validarYSubir(this.form);" style="flex: 2;">
+                                <button type="button" class="btn btn-submit" id="btnSubirArchivo" onclick="validarYSubir(this.form);" style="flex: 2;">
                                     📁 Subir Archivo
                                 </button>
                                 <button type="button" class="btn" onclick="mostrarHistorialHoy()" style="flex: 1; background: #e2e8f0; color: #1e293b; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">
@@ -189,6 +189,17 @@ $fechaActual = date('Y-m-d');
         </div>
     </div>
 </div>
+<!-- Modal personalizado de advertencia de partida -->
+<<div id="customErrorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; max-width: 380px; width: 90%; box-shadow: 0 15px 30px rgba(0,0,0,0.2); text-align: center; animation: fadeIn 0.3s ease;">
+        <div style="font-size: 42px; margin-bottom: 8px;">⚠️</div>
+        <h3 id="customErrorTitle" style="margin: 0 0 8px 0; color: #1e293b; font-size: 18px; font-weight: 700;">Atención</h3>
+        <p id="customErrorMessage" style="margin: 0 0 20px 0; color: #64748b; font-size: 14px; line-height: 1.5;">
+            Mensaje de error aquí.
+        </p>
+        <button type="button" onclick="closeCustomErrorModal()" style="background: #7c3aed; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">Entendido</button>
+    </div>
+</div>
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -196,6 +207,7 @@ $fechaActual = date('Y-m-d');
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
 
 <script>
     // 🔥 NUEVO: Obtener tab actual desde PHP
@@ -269,44 +281,44 @@ $fechaActual = date('Y-m-d');
     }
 
     function validarYSubir(form) {
-    // 🛡️ CANDADO DE DUPLICIDAD: Si ya se está procesando, bloqueamos clics extra
-    if (form.dataset.submitting === 'true') return;
-    form.dataset.submitting = 'true';
+        // 🛡️ CANDADO DE DUPLICIDAD: Si ya se está procesando, bloqueamos clics extra
+        if (form.dataset.submitting === 'true') return;
+        form.dataset.submitting = 'true';
 
-    // 1. Capturar los campos
-    const titulo = document.getElementById('title');
-    const partida = document.getElementById('partida');
-    const archivo = document.getElementById('pdf');
+        // 1. Capturar los campos
+        const titulo = document.getElementById('title');
+        const partida = document.getElementById('partida');
+        const archivo = document.getElementById('pdf');
 
-    // 2. Validar que no estén vacíos
-    if (titulo && titulo.value.trim() === '') {
-        showToast('Por favor, ingresa el nombre del título.', 'error');
-        titulo.focus();
-        form.dataset.submitting = 'false'; // Liberamos el candado si falla
-        return;
-    }
+        // 2. Validar que no estén vacíos
+        if (titulo && titulo.value.trim() === '') {
+            showToast('Por favor, ingresa el nombre del título.', 'error');
+            titulo.focus();
+            form.dataset.submitting = 'false'; // Liberamos el candado si falla
+            return;
+        }
 
-    if (partida && partida.value.trim() === '') {
-        showToast('Por favor, ingresa la partida electrónica.', 'error');
-        partida.focus();
-        form.dataset.submitting = 'false';
-        return;
-    }
+        if (partida && partida.value.trim() === '') {
+            showToast('Por favor, ingresa la partida electrónica.', 'error');
+            partida.focus();
+            form.dataset.submitting = 'false';
+            return;
+        }
 
-    if (archivo && archivo.files.length === 0) {
-        showToast('Por favor, selecciona un archivo PDF válido.', 'error');
-        form.dataset.submitting = 'false';
-        return;
-    }
+        if (archivo && archivo.files.length === 0) {
+            showToast('Por favor, selecciona un archivo PDF válido.', 'error');
+            form.dataset.submitting = 'false';
+            return;
+        }
 
-    const valorTitulo = titulo.value.trim();
-    const valorPartida = partida.value.trim();
-    const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
+        const valorTitulo = titulo.value.trim();
+        const valorPartida = partida.value.trim();
+        const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
 
-    // 3. Mostrar la ventana de confirmación de SweetAlert2
-    Swal.fire({
-        title: 'Verifica los datos de envío',
-        html: `
+        // 3. Mostrar la ventana de confirmación de SweetAlert2
+        Swal.fire({
+            title: 'Verifica los datos de envío',
+            html: `
         <div style="text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px;">
             <p style="margin: 4px 0;"><strong>Título:</strong> ${valorTitulo}</p>
             <p style="margin: 4px 0;"><strong>Partida:</strong> ${valorPartida}</p>
@@ -314,51 +326,52 @@ $fechaActual = date('Y-m-d');
         </div>
         <p style="margin-top: 12px; font-size: 14px;">¿Deseas proceder con la subida?</p>
         `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#2563eb',
-        cancelButtonColor: '#dc2626',
-        confirmButtonText: 'Sí, subir archivo',
-        cancelButtonText: 'Revisar',
-        allowOutsideClick: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Mostrar alerta de carga bloqueante
-            Swal.fire({
-                title: 'Subiendo archivo...',
-                text: 'Por favor espere un momento.',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#dc2626',
+            confirmButtonText: 'Sí, subir archivo',
+            cancelButtonText: 'Revisar',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar alerta de carga bloqueante
+                Swal.fire({
+                    title: 'Subiendo archivo...',
+                    text: 'Por favor espere un momento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-            // Creamos un FormData con los datos del formulario
-            const formData = new FormData(form);
+                // Creamos un FormData con los datos del formulario
+                const formData = new FormData(form);
 
-            // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
-            fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
-                } else {
-                    Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
-                    form.dataset.submitting = 'false';
-                }
-            })
-            .catch(error => {
-                Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
+                // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
+                fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
+                        } else {
+                            Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
+                            form.dataset.submitting = 'false';
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
+                        form.dataset.submitting = 'false';
+                    });
+            } else {
+                // Si el usuario hace clic en "Revisar", liberamos el candado
                 form.dataset.submitting = 'false';
-            });
-        } else {
-            // Si el usuario hace clic en "Revisar", liberamos el candado
-            form.dataset.submitting = 'false';
-        }
-    });
-}
+            }
+        });
+    }
+
     function mostrarHistorialHoy() {
         if (!enviosHoy || enviosHoy.length === 0) {
             Swal.fire({
@@ -478,28 +491,28 @@ $fechaActual = date('Y-m-d');
     // CARGA Y PREVISUALIZACIÓN DEL PDF
     // ================================
     pdfInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === 'application/pdf') {
-        const fileName = file.name.replace(/\.pdf$/i, '');
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            const fileName = file.name.replace(/\.pdf$/i, '');
 
-        // 🔥 MODIFICADO: Se actualiza siempre, ignorando si ya tenía texto
-        titleInput.value = fileName;
-        localStorage.setItem('qr_form_title', fileName);
+            // 🔥 MODIFICADO: Se actualiza siempre, ignorando si ya tenía texto
+            titleInput.value = fileName;
+            localStorage.setItem('qr_form_title', fileName);
 
-        if (!tituloNumberInput.value) {
-            tituloNumberInput.value = fileName;
+            if (!tituloNumberInput.value) {
+                tituloNumberInput.value = fileName;
+            }
+
+            const fileURL = URL.createObjectURL(file);
+            // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
+            pdfViewer.src = fileURL + '#toolbar=1&navpanes=0&scrollbar=1';
+
+            showToast("PDF cargado correctamente", "success");
+        } else {
+            showToast('Por favor, selecciona un archivo PDF válido.', "danger");
+            pdfInput.value = "";
         }
-
-        const fileURL = URL.createObjectURL(file);
-        // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
-        pdfViewer.src = fileURL + '#toolbar=1&navpanes=0&scrollbar=1';
-
-        showToast("PDF cargado correctamente", "success");
-    } else {
-        showToast('Por favor, selecciona un archivo PDF válido.', "danger");
-        pdfInput.value = "";
-    }
-});
+    });
 
     // ================================
     // CARGA MANUAL DE QR
@@ -664,31 +677,131 @@ $fechaActual = date('Y-m-d');
         toast.show();
     }
     // ================================
-// SINCRONIZAR Y PERSISTIR INPUTS (Protegido)
-// ================================
-if (titleInput && tituloNumberInput) {
-    titleInput.addEventListener('input', function() {
-        localStorage.setItem('qr_form_title', this.value);
-        tituloNumberInput.value = this.value;
-    });
-    saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
-}
+    // SINCRONIZAR Y PERSISTIR INPUTS (Protegido)
+    // ================================
+    if (titleInput && tituloNumberInput) {
+        titleInput.addEventListener('input', function() {
+            localStorage.setItem('qr_form_title', this.value);
+            tituloNumberInput.value = this.value;
+        });
+        saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
+    }
 
-if (partidaInput && numberInput) {
-    partidaInput.addEventListener('input', function() {
-        localStorage.setItem('qr_form_partida', this.value);
-        numberInput.value = this.value;
-    });
-    saveToLocalStorageOnChange(numberInput, 'qr_form_partida');
-}
+    if (partidaInput && numberInput) {
+        partidaInput.addEventListener('input', function() {
+            localStorage.setItem('qr_form_partida', this.value);
+            numberInput.value = this.value;
+        });
+        saveToLocalStorageOnChange(numberInput, 'qr_form_partida');
+    }
 
-const clearFormBtn = document.getElementById("clearForm");
-if (clearFormBtn && mainForm) {
-    clearFormBtn.addEventListener("click", function() {
-        resetGenerationFormState();
-        mainForm.classList.remove('was-validated');
-        window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
-        showToast("Formulario y datos persistentes limpiados.", "success");
+    const clearFormBtn = document.getElementById("clearForm");
+    if (clearFormBtn && mainForm) {
+        clearFormBtn.addEventListener("click", function() {
+            resetGenerationFormState();
+            mainForm.classList.remove('was-validated');
+            window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
+            showToast("Formulario y datos persistentes limpiados.", "success");
+        });
+    }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Capturar todos los campos de partida disponibles en la vista
+        const inputsPartida = [
+            document.getElementById('partida'),
+            document.getElementById('inputBuscarPartida')
+        ].filter(Boolean);
+
+        const btnSubir = document.getElementById('btnSubirArchivo');
+
+        // 2. Aplicar el filtro carácter por carácter en tiempo real
+        inputsPartida.forEach(inputPartida => {
+            inputPartida.setAttribute('maxlength', '9');
+
+            inputPartida.addEventListener('input', function(e) {
+                let val = this.value;
+                let cleaned = '';
+
+                for (let i = 0; i < val.length && cleaned.length < 9; i++) {
+                    let char = val.charAt(i);
+
+                    if (cleaned.length === 0) {
+                        // Primer carácter: Puede ser una letra (A-Z) o un número del 1 al 9 (PROHIBIDO el 0 al inicio)
+                        if (/^[a-zA-Z1-9]$/.test(char)) {
+                            cleaned += (/[a-zA-Z]/.test(char) ? char.toUpperCase() : char);
+                        }
+                    } else if (cleaned.length === 1 && /^[a-zA-Z]$/.test(cleaned.charAt(0))) {
+                        // Segundo carácter (si el primero fue letra): Obligatoriamente un número del 1 al 9
+                        if (/^[1-9]$/.test(char)) {
+                            cleaned += char;
+                        }
+                    } else {
+                        // Demás caracteres: Números permitidos del 0 al 9
+                        if (/^[0-9]$/.test(char)) {
+                            cleaned += char;
+                        }
+                    }
+                }
+                this.value = cleaned;
+            });
+        });
+
+        // 3. Interceptar el botón de subida con validaciones ordenadas y únicas
+        if (btnSubir) {
+            const originalOnClick = btnSubir.onclick || btnSubir.getAttribute('onclick');
+
+            btnSubir.onclick = function(e) {
+                if (e) e.preventDefault();
+
+                const inputTitulo = document.getElementById('title') || document.querySelector('input[name="title"]');
+                const activePartida = document.getElementById('partida');
+
+                // PASO 1: Validar Título
+                if (inputTitulo && inputTitulo.value.trim() === '') {
+                    showCustomErrorModal('Campo Requerido', 'Por favor, ingrese el nombre del título antes de continuar.');
+                    inputTitulo.focus();
+                    return false;
+                }
+
+                // PASO 2: Validar Partida (Acepta exactamente 8 números o 1 letra + 8 números, sin ceros iniciales)
+                if (activePartida) {
+                    const valPartida = activePartida.value.trim();
+                    const regexPartida = /^([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})$/;
+
+                    if (!regexPartida.test(valPartida)) {
+                        showCustomErrorModal('Partida Inválida', 'La partida debe ser de 8 dígitos (ej. 12345678) o 1 letra seguida de 8 dígitos (ej. P12345678). El primer número nunca puede ser 0.');
+                        activePartida.focus();
+                        return false;
+                    }
+                }
+
+                // PASO 3: Ejecutar acción original (SweetAlert de confirmación)
+                if (typeof originalOnClick === 'function') {
+                    return originalOnClick.call(this, e);
+                } else if (typeof originalOnClick === 'string') {
+                    return eval(originalOnClick);
+                }
+            };
+        }
     });
-}
+
+    function showCustomErrorModal(title, message) {
+        const modal = document.getElementById('customErrorModal');
+        const titleEl = document.getElementById('customErrorTitle');
+        const msgEl = document.getElementById('customErrorMessage');
+        
+        if (modal && titleEl && msgEl) {
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeCustomErrorModal() {
+        const modal = document.getElementById('customErrorModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
 </script>

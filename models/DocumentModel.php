@@ -82,22 +82,30 @@ public function search($titulo = '', $partida = '', $fecha = '', $sortOrder = 'D
 }
 
     public function searchDocuments(string $numero, string $year): array
-    {
-        $sql = "SELECT * FROM documents WHERE title LIKE ?";
-        $params = ["%$numero%"];
+{
+    $sql = "SELECT * FROM documents WHERE title LIKE ?";
+    $params = ["%$numero%"];
 
-        if ($this->hasColumn('fecha')) {
-            $sql .= " AND YEAR(fecha) = ?";
-            $params[] = $year;
-        } elseif ($this->hasColumn('created')) {
-            $sql .= " AND YEAR(created) = ?";
-            $params[] = $year;
-        }
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $dateColumn = null;
+    if ($this->hasColumn('fecha')) {
+        $sql .= " AND YEAR(fecha) = ?";
+        $params[] = $year;
+        $dateColumn = 'fecha';
+    } elseif ($this->hasColumn('created')) {
+        $sql .= " AND YEAR(created) = ?";
+        $params[] = $year;
+        $dateColumn = 'created';
     }
+
+    // 🔥 Ordenar los resultados (por ejemplo, del más reciente al más antiguo)
+    if ($dateColumn) {
+        $sql .= " ORDER BY $dateColumn DESC";
+    }
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     public function getById(int $id): ?array
     {

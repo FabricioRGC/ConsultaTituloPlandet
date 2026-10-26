@@ -55,8 +55,8 @@ $tabKey = 'updateQR-PDF';
         </div>
         <div class="upd-card-body">
             <div class="upd-alert upd-alert-warning">
-                <strong>⚠️ Se encontraron múltiples documentos</strong>
-                <p>Selecciona el documento exacto que deseas actualizar.</p>
+                <strong>⚠️ Resultados filtrados por año</strong>
+                <p>Se muestran los documentos coincidentes correspondientes al año seleccionado.</p>
             </div>
             
             <div class="upd-results-grid">

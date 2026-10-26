@@ -50,6 +50,8 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
 
             <input type="text"
                 name="partida"
+                id="inputBuscarPartida"
+                maxlength="9"
                 class="sqr-input"
                 placeholder="Buscar por partida"
                 value="<?= htmlspecialchars($_POST['partida'] ?? '') ?>">
@@ -309,6 +311,121 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
         }
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Capturamos cualquiera de los dos campos de partida que existan en la vista actual
+        const inputsPartida = [
+            document.getElementById('partida'),
+            document.getElementById('inputBuscarPartida')
+        ].filter(Boolean);
+
+        const btnSubir = document.getElementById('btnSubirArchivo');
+
+        inputsPartida.forEach(inputPartida => {
+            // 1. Control estricto en tiempo real para cada input de partida
+            inputPartida.addEventListener('input', function(e) {
+                let val = this.value;
+                if (val.length === 0) {
+                    this.value = '';
+                    return;
+                }
+
+                let first = val.charAt(0);
+                let formatted = '';
+
+                // CASO A: Empieza con una letra (ej. P)
+                if (/^[a-zA-Z]$/.test(first)) {
+                    formatted += first.toUpperCase();
+                    if (val.length > 1) {
+                        let rest = val.substring(1);
+                        let second = rest.charAt(0);
+                        // El primer número después de la letra debe ser de 1 al 9 (prohibido el 0)
+                        if (/^[1-9]$/.test(second)) {
+                            formatted += second;
+                            if (rest.length > 1) {
+                                // Los siguientes dígitos aceptan números del 0 al 9 (hasta completar 8 en total)
+                                let remainingDigits = rest.substring(1, 8).replace(/[^0-9]/g, '');
+                                formatted += remainingDigits;
+                            }
+                        }
+                    }
+                } 
+                // CASO B: Empieza con un número del 1 al 9 (prohibido el 0 al inicio)
+                else if (/^[1-9]$/.test(first)) {
+                    formatted += first;
+                    if (val.length > 1) {
+                        let rest = val.substring(1, 8).replace(/[^0-9]/g, '');
+                        formatted += rest;
+                    }
+                } 
+                // Si intenta poner un 0 al inicio o caracteres no válidos, se limpia
+                else {
+                    formatted = '';
+                }
+
+                this.value = formatted;
+            });
+        });
+
+        // 2. Validación estricta al hacer clic en el botón de subida (si aplica)
+        if (btnSubir) {
+            const originalOnClick = btnSubir.onclick || btnSubir.getAttribute('onclick');
+
+            btnSubir.onclick = function(e) {
+                if (e) e.preventDefault();
+
+                const inputTitulo = document.getElementById('title') || document.querySelector('input[name="title"]');
+                const activePartida = document.getElementById('partida');
+
+                // Validar Título
+                if (inputTitulo && inputTitulo.value.trim() === '') {
+                    showCustomErrorModal('Campo Requerido', 'Por favor, ingrese el nombre del título antes de continuar.');
+                    inputTitulo.focus();
+                    return false;
+                }
+
+                // Validar Partida
+                if (activePartida) {
+                    const valPartida = activePartida.value.trim();
+                    const regexPartida = /^([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})$/;
+
+                    if (!regexPartida.test(valPartida)) {
+                        showCustomErrorModal('Partida Inválida', 'La partida debe ser de 8 dígitos (ej. 12345678) o 1 letra seguida de 8 dígitos (ej. P12345678). El primer número nunca puede ser 0.');
+                        activePartida.focus();
+                        return false;
+                    }
+                }
+
+                if (typeof originalOnClick === 'function') {
+                    return originalOnClick.call(this, e);
+                } else if (typeof originalOnClick === 'string') {
+                    return eval(originalOnClick);
+                }
+            };
+        }
+    });
+
+    function showCustomErrorModal(title, message) {
+        const modal = document.getElementById('customErrorModal');
+        const titleEl = document.getElementById('customErrorTitle');
+        const msgEl = document.getElementById('customErrorMessage');
+        
+        if (modal && titleEl && msgEl) {
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeCustomErrorModal() {
+        const modal = document.getElementById('customErrorModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+
+
 // ðŸ”¥ NUEVO: Pasar tab actual a JavaScript
 const CURRENT_TAB = "<?= $tabKey ?>";
 

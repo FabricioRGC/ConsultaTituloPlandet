@@ -6,95 +6,89 @@ $error = isset($_GET['error']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plandet - Login</title>
+    <title>Plandet - Acceso al Sistema</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" href="/ConsultaTituloPlandet/src/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .gradient-bg {
-            background: linear-gradient(to bottom right, rgb(37, 99, 235), rgb(29, 78, 216));
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            /* Fondo general cambiado al tono marino oscuro solicitado */
+            background-color: #070e1b;
         }
     </style>
 </head>
-<body class="m-0 p-0 h-screen overflow-hidden bg-white">
-    <div class="min-h-screen flex">
-        <div class="hidden lg:flex lg:w-1/2 gradient-bg p-12 flex-col justify-between relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
-            </div>
+<body class="m-0 p-0 min-h-screen flex items-center justify-center p-4 sm:p-6 overflow-hidden relative">
 
+    <!-- Tarjeta Principal -->
+    <div class="w-full max-w-5xl bg-[#091224] rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] border border-blue-900/30 overflow-hidden flex flex-col lg:flex-row relative z-10">
+        
+        <!-- PANEL IZQUIERDO -->
+        <div class="lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 p-10 lg:p-14 text-white flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-blue-800/40">
             <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <line x1="10" y1="9" x2="8" y2="9"/>
-                        </svg>
-                    </div>
-                    <h1 class="text-white text-3xl font-medium">Plandet</h1>
+                <!-- Logo -->
+                <div class="mb-8 flex items-center">
+                    <img src="/ConsultaTituloPlandet/src/logoplandet - white.png" alt="Plandet Logo" class="h-12 w-auto object-contain">
                 </div>
-                <h2 class="text-white/90 text-4xl leading-tight font-medium">
-                    Sistema de Gestion de<br>Partidas Registrales
+                
+                <h2 class="text-3xl lg:text-4xl font-extrabold leading-[1.2] text-white tracking-tight mb-4">
+                    Sistema de Gestión de<br><span class="text-blue-200">Partidas Registrales</span>
                 </h2>
+                <p class="text-blue-100/90 text-sm lg:text-base leading-relaxed font-normal">
+                    Plataforma integral y segura para la administración, control y validación digital de documentos.
+                </p>
             </div>
 
-            <div class="relative z-10">
-                <p class="text-white/80 text-base">
-                    Plataforma integral para la administracion y control de partidas registrales
+            <div class="relative z-10 mt-10 pt-6 border-t border-white/15">
+                <p class="text-blue-200/80 text-xs font-medium tracking-wide">
+                    © <?= date('Y') ?> Plandet
                 </p>
             </div>
         </div>
 
-        <div class="flex-1 flex items-center justify-center p-8 bg-white">
-            <div class="w-full max-w-md">
+        <!-- PANEL DERECHO (Formulario) -->
+        <div class="lg:w-1/2 p-10 lg:p-14 bg-[#091224] flex flex-col justify-center">
+            
+            <div class="w-full max-w-md mx-auto">
                 <div class="mb-8">
-                    <div class="lg:hidden flex items-center gap-3 mb-6">
-                        <div class="bg-blue-600 p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                <line x1="10" y1="9" x2="8" y2="9"/>
-                            </svg>
-                        </div>
-                        <h1 class="text-2xl font-medium">Plandet</h1>
-                    </div>
-                    <h2 class="text-3xl mb-2 font-medium">Bienvenido</h2>
-                    <p class="text-gray-500">Ingresa tus credenciales para acceder al sistema</p>
+                    <h2 class="text-3xl font-extrabold text-white tracking-tight mb-2">Bienvenido de nuevo</h2>
+                    <p class="text-slate-400 text-sm font-medium">Ingresa tus credenciales corporativas para continuar</p>
                 </div>
 
                 <?php if ($error): ?>
-                    <div class="mb-4 rounded-lg border border-red-300 bg-red-50 text-red-700 px-4 py-3">
-                        Credenciales invalidas. Verifica usuario/correo y contrasena.
+                    <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-950/50 text-red-300 px-4 py-3 text-sm flex items-center gap-3">
+                        <span class="text-lg">⚠️</span>
+                        <span class="font-semibold">Credenciales inválidas. Verifica tu usuario y contraseña.</span>
                     </div>
                 <?php endif; ?>
 
-                <form action="/ConsultaTituloPlandet/index.php?action=login" method="POST" class="space-y-5" autocomplete="off">
+                <form action="/ConsultaTituloPlandet/index.php?action=login" method="POST" class="space-y-6" autocomplete="off">
+                    
+                    <!-- Input Usuario / Correo -->
                     <div>
-                        <label for="name" class="block mb-2 text-gray-900 font-medium">
-                            Correo o usuario
+                        <label for="name" class="block mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            Correo o Usuario
                         </label>
                         <input
                             type="text"
                             id="name"
                             name="name"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                            class="w-full px-4.5 py-3.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-sm shadow-inner"
                             placeholder="usuario@plandet.local"
                             required
                         />
                     </div>
 
+                    <!-- Input Contraseña -->
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <label for="password" class="text-gray-900 font-medium">
-                                Contrasena
+                            <label for="password" class="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                Contraseña
                             </label>
-                            <a href="#" class="text-sm text-blue-600 hover:text-blue-700 transition-colors">
-                                Olvide mi contrasena
+                            <a href="#" class="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors">
+                                ¿Olvidaste tu contraseña?
                             </a>
                         </div>
                         <div class="relative">
@@ -102,15 +96,15 @@ $error = isset($_GET['error']);
                                 type="password"
                                 id="password"
                                 name="password"
-                                class="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
-                                placeholder="********"
+                                class="w-full px-4.5 py-3.5 pr-12 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-sm shadow-inner"
+                                placeholder="••••••••"
                                 required
                             />
                             <button
                                 type="button"
                                 onclick="togglePassword()"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors"
-                                aria-label="Mostrar u ocultar contrasena"
+                                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-1"
+                                aria-label="Mostrar u ocultar contraseña"
                             >
                                 <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -120,33 +114,36 @@ $error = isset($_GET['error']);
                         </div>
                     </div>
 
-                    <div class="flex items-center">
+                    <!-- Recordar Sesión -->
+                    <div class="flex items-center pt-1">
                         <input
                             type="checkbox"
                             id="remember"
                             name="remember"
-                            class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-600"
+                            class="w-4 h-4 rounded border-slate-800 bg-slate-900 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
                         />
-                        <label for="remember" class="ml-2 text-gray-900 font-medium">
-                            Recordar mi sesion
+                        <label for="remember" class="ml-2.5 text-sm text-slate-400 font-medium cursor-pointer">
+                            Recordar mi sesión
                         </label>
                     </div>
 
+                    <!-- Botón Principal -->
                     <button
                         type="submit"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-colors duration-200 font-medium"
+                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-3.5 rounded-xl transition-all duration-300 font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 active:translate-y-0 text-sm tracking-wide"
                     >
-                        Iniciar sesion
+                        Iniciar Sesión
                     </button>
                 </form>
 
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <p class="text-center text-gray-500">
-                        Necesitas ayuda? <a href="#" class="text-blue-600 hover:text-blue-700 transition-colors">Contacta al soporte</a>
+                <div class="mt-8 pt-6 border-t border-slate-800/80">
+                    <p class="text-center text-xs text-slate-500 font-medium">
+                        ¿Necesitas asistencia técnica? <a href="#" class="text-blue-400 font-semibold hover:underline">Contacta al soporte</a>
                     </p>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
