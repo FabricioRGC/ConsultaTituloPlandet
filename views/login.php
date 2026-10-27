@@ -15,8 +15,7 @@ $error = isset($_GET['error']);
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            /* Fondo general cambiado al tono marino oscuro solicitado */
-            background-color: #070e1b;
+            background: linear-gradient(135deg, #070e1b 0%, #0d1b32 50%, #070e1b 100%);
         }
     </style>
 </head>
@@ -26,56 +25,88 @@ $error = isset($_GET['error']);
     <div class="w-full max-w-5xl bg-[#091224] rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] border border-blue-900/30 overflow-hidden flex flex-col lg:flex-row relative z-10">
         
         <!-- PANEL IZQUIERDO -->
-        <div class="lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 p-10 lg:p-14 text-white flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-blue-800/40">
+        <div class="lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 p-8 lg:p-12 text-white flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-blue-800/40">
+            
             <div class="relative z-10">
-                <!-- Logo -->
-                <div class="mb-8 flex items-center">
-                    <img src="/ConsultaTituloPlandet/src/logoplandet - white.png" alt="Plandet Logo" class="h-12 w-auto object-contain">
+                <!-- Logo Oficial -->
+                <div class="mb-6 flex items-center">
+                    <img src="/ConsultaTituloPlandet/logo/logoplandet-white.png" alt="Plandet Logo" class="h-8 w-auto object-contain">
                 </div>
                 
-                <h2 class="text-3xl lg:text-4xl font-extrabold leading-[1.2] text-white tracking-tight mb-4">
+                <!-- Título y Subtítulo exactos -->
+                <h2 class="text-5sxl lg:text-4xl font-extrabold leading-[1.2] text-white tracking-tight mb-3">
                     Sistema de Gestión de<br><span class="text-blue-200">Partidas Registrales</span>
                 </h2>
-                <p class="text-blue-100/90 text-sm lg:text-base leading-relaxed font-normal">
+                <p class="text-blue-100/90 text-xs lg:text-sm leading-relaxed font-normal mb-6">
                     Plataforma integral y segura para la administración, control y validación digital de documentos.
                 </p>
+
+                <!-- Bloques funcionales compactos para equilibrar el espacio -->
+                <div class="space-y-2.5">
+                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15">
+                        <div class="bg-white/15 p-2 rounded-xl shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <path d="m9 15 2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white text-xs font-bold">Gestión Documental & QRs</h4>
+                            <p class="text-blue-100/80 text-[10px]">Validación y estampado digital de archivos.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15">
+                        <div class="bg-white/15 p-2 rounded-xl shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white text-xs font-bold">Seguridad y Auditoría</h4>
+                            <p class="text-blue-100/80 text-[10px]">Historial de acciones y control por usuario.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="relative z-10 mt-10 pt-6 border-t border-white/15">
-                <p class="text-blue-200/80 text-xs font-medium tracking-wide">
-                    © <?= date('Y') ?> Plandet
+            <!-- Footer con la misma distancia -->
+            <div class="relative z-10 mt-6 pt-4 border-t border-white/15">
+                <p class="text-blue-200/80 text-xs font-medium tracking-wide text-center">
+                    © <?= date('Y') ?> Plandet 
                 </p>
             </div>
         </div>
 
-        <!-- PANEL DERECHO (Formulario) -->
-        <div class="lg:w-1/2 p-10 lg:p-14 bg-[#091224] flex flex-col justify-center">
+        <!-- PANEL DERECHO (Formulario con distribución compacta y sin vacíos) -->
+        <div class="lg:w-1/2 px-8 py-8 lg:px-12 lg:py-10 bg-[#091224] border border-blue-500/20 shadow-[0_0_30px_rgba(37,99,235,0.12)] lg:rounded-r-3xl flex flex-col justify-center relative">
             
             <div class="w-full max-w-md mx-auto">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-extrabold text-white tracking-tight mb-2">Bienvenido de nuevo</h2>
-                    <p class="text-slate-400 text-sm font-medium">Ingresa tus credenciales corporativas para continuar</p>
+                <div class="mb-5">
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight mb-1">Bienvenido</h2>
+                    <p class="text-slate-400 text-xs lg:text-sm font-medium">Ingresa tus credenciales corporativas para continuar</p>
                 </div>
 
                 <?php if ($error): ?>
-                    <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-950/50 text-red-300 px-4 py-3 text-sm flex items-center gap-3">
-                        <span class="text-lg">⚠️</span>
+                    <div class="mb-4 rounded-xl border border-red-500/30 bg-red-950/50 text-red-300 px-3.5 py-2.5 text-xs flex items-center gap-2.5">
+                        <span class="text-base">⚠️</span>
                         <span class="font-semibold">Credenciales inválidas. Verifica tu usuario y contraseña.</span>
                     </div>
                 <?php endif; ?>
 
-                <form action="/ConsultaTituloPlandet/index.php?action=login" method="POST" class="space-y-6" autocomplete="off">
+                <form action="/ConsultaTituloPlandet/index.php?action=login" method="POST" class="space-y-4" autocomplete="off">
                     
                     <!-- Input Usuario / Correo -->
                     <div>
-                        <label for="name" class="block mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <label for="name" class="block mb-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
                             Correo o Usuario
                         </label>
                         <input
                             type="text"
                             id="name"
                             name="name"
-                            class="w-full px-4.5 py-3.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-sm shadow-inner"
+                            class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-sm shadow-inner"
                             placeholder="usuario@plandet.local"
                             required
                         />
@@ -83,7 +114,7 @@ $error = isset($_GET['error']);
 
                     <!-- Input Contraseña -->
                     <div>
-                        <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center justify-between mb-1.5">
                             <label for="password" class="text-xs font-bold text-slate-400 uppercase tracking-wider">
                                 Contraseña
                             </label>
@@ -96,7 +127,7 @@ $error = isset($_GET['error']);
                                 type="password"
                                 id="password"
                                 name="password"
-                                class="w-full px-4.5 py-3.5 pr-12 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-sm shadow-inner"
+                                class="w-full px-4 py-3 pr-12 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-sm shadow-inner"
                                 placeholder="••••••••"
                                 required
                             />
@@ -106,7 +137,7 @@ $error = isset($_GET['error']);
                                 class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-1"
                                 aria-label="Mostrar u ocultar contraseña"
                             >
-                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                     <circle cx="12" cy="12" r="3"/>
                                 </svg>
@@ -114,29 +145,16 @@ $error = isset($_GET['error']);
                         </div>
                     </div>
 
-                    <!-- Recordar Sesión -->
-                    <div class="flex items-center pt-1">
-                        <input
-                            type="checkbox"
-                            id="remember"
-                            name="remember"
-                            class="w-4 h-4 rounded border-slate-800 bg-slate-900 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                        />
-                        <label for="remember" class="ml-2.5 text-sm text-slate-400 font-medium cursor-pointer">
-                            Recordar mi sesión
-                        </label>
-                    </div>
-
                     <!-- Botón Principal -->
                     <button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-3.5 rounded-xl transition-all duration-300 font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 active:translate-y-0 text-sm tracking-wide"
+                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-3 rounded-xl transition-all duration-300 font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 active:translate-y-0 text-sm tracking-wide mt-2"
                     >
                         Iniciar Sesión
                     </button>
                 </form>
 
-                <div class="mt-8 pt-6 border-t border-slate-800/80">
+                <div class="mt-5 pt-4 border-t border-slate-800/80">
                     <p class="text-center text-xs text-slate-500 font-medium">
                         ¿Necesitas asistencia técnica? <a href="#" class="text-blue-400 font-semibold hover:underline">Contacta al soporte</a>
                     </p>
