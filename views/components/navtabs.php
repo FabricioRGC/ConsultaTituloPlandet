@@ -20,13 +20,13 @@ $tabs = [
     [
         "key" => "updateQR-PDF",
         "label" => "Actualizar Qr / Pdf",
-        "color" => "purple",
+        "color" => "blue",
         "roles" => ["admin", "user"]
     ],
     [
         "key" => "searchQR-PDF",
         "label" => "Buscar Qr / Pdf",
-        "color" => "purple",
+        "color" => "blue",
         "roles" => ["admin", "user"]
     ],
     [

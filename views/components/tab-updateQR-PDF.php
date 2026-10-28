@@ -15,7 +15,7 @@ $tabKey = 'updateQR-PDF';
     
     <!-- 🔍 MODO BÚSQUEDA -->
     <div class="upd-card upd-search-card">
-        <div class="upd-card-header">
+        <div class="upd-card-header" style="background: linear-gradient(to right, #2563eb, #1d4ed8) !important; color: white !important; border: none !important; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);">
             <h3 class="upd-title">🔍 Buscar Documento para Actualizar</h3>
         </div>
         <div class="upd-card-body">
@@ -38,7 +38,7 @@ $tabKey = 'updateQR-PDF';
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="upd-btn upd-btn-primary">
+                <button type="submit" class="upd-btn upd-btn-primary" style="background: linear-gradient(to right, #2563eb, #1d4ed8) !important; color: white !important; border: none !important; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);">
                     🔍 Buscar Documento
                 </button>
             </form>

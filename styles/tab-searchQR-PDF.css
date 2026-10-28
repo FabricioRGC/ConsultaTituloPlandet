@@ -38,9 +38,12 @@
 }
 
 .sqr-card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  background-color: #091224 !important; /* Azul marino exacto del login */
+    border-bottom: 1px solid rgba(37, 99, 235, 0.3) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    padding: 1rem 1.5rem;
 }
 
 .sqr-card-title {
