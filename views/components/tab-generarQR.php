@@ -4,6 +4,7 @@ require_once __DIR__ . '/../../controllers/QRController.php';
 $tabKey = 'generarQR';
 
 $controller = new QRController();
+
 $usuarioId = $_SESSION['usuario_id'] ?? 0;
 $rolUsuario = $_SESSION['usuario_rol'] ?? 'user';
 
@@ -12,6 +13,8 @@ $historialHoyDb = $auditModel->getTodayActivitiesForUserOrAdmin($usuarioId, $rol
 
 // Preparamos el JSON de forma segura en PHP antes de pintarlo en el script
 $jsonEnvios = json_encode($historialHoyDb, JSON_UNESCAPED_UNICODE);
+
+
 
 
 // 1. Manejo del Formulario de Subida (POST)
@@ -31,17 +34,15 @@ $fechaActual = date('Y-m-d');
 
 <div class="tab-generarQR">
     <div class="main-container">
-
         <div class="content-wrapper">
 
+            <!-- PANEL IZQUIERDO -->
             <aside class="left-panel">
                 <div class="left-panel-scroll">
                     <section class="card">
                         <h2 class="card-title">📤 Subir PDF</h2>
-                        <form id="
 
-                        <!-- 🔥 MODIFICADO: Agregar &tab= en action -->
-                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate
+                        <form id="formGenerarQR" method="post" enctype="multipart/form-data" class="needs-validation" novalidate
                             action="?action=dasboard&tab=<?= urlencode($tabKey) ?>">
 
                             <button id="clearForm" type="button" class="btn-action btn-clear-form form-clear-btn">
@@ -57,14 +58,14 @@ $fechaActual = date('Y-m-d');
                             <div class="form-group">
                                 <label for="partida" class="form-label">Partida Electrónica:</label>
                                 <input type="text" class="form-control" id="partida" name="partida"
-                                    placeholder="Ingrese la partida electrónica" required>
-                                <div class="invalid-feedback">Ingrese la partida.</div>
+                                    maxlength="9" pattern="([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})" title="Debe contener 8 números (sin empezar en 0) o 1 letra seguida de 8 números" placeholder="P12345678 o 12345678" required>
+                                <div class="invalid-feedback">El formato debe ser 1 letra y 8 números exactos.</div>
                             </div>
 
                             <div class="form-group">
                                 <label for="fecha" class="form-label">Fecha de Emisión:</label>
                                 <input type="date" class="form-control" id="fecha" name="fecha"
-                                    value="<?= $fechaActual ?>" required>
+                                    value="<?= $fechaActual ?>" min="<?= date('Y-m-d'); ?>" required>
                                 <div class="invalid-feedback">Ingrese la fecha.</div>
                             </div>
 
@@ -75,9 +76,14 @@ $fechaActual = date('Y-m-d');
                                 <div class="invalid-feedback">Por favor, sube un archivo PDF válido.</div>
                             </div>
 
-                            <button type="button" class="btn btn-submit" onclick="validarYSubir(this.form);">
-                                📁 Subir Archivo
-                            </button>   
+                            <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                <button type="button" class="btn btn-submit" onclick="validarYSubir(this.form);" style="flex: 2;">
+                                    📁 Subir Archivo
+                                </button>
+                                <button type="button" class="btn" onclick="mostrarHistorialHoy()" style="flex: 1; background: #e2e8f0; color: #1e293b; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">
+                                    📋 Historial
+                                </button>
+                            </div>
                         </form>
                     </section>
 
@@ -155,6 +161,7 @@ $fechaActual = date('Y-m-d');
                 </div>
             </aside>
 
+            <!-- PANEL DERECHO -->
             <main class="right-panel">
                 <div class="preview-container">
                     <h2 class="preview-title">📄 Vista Previa del Documento</h2>
@@ -166,18 +173,31 @@ $fechaActual = date('Y-m-d');
                     <iframe class="pdf-viewer" id="pdf-preview" title="Previsualización del PDF con QR"></iframe>
                 </div>
             </main>
+
         </div>
     </div>
+</div>
 
-    <div class="toast-container">
-        <div id="liveToast" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
-            <div class="toast-header">
-                <strong>⚠️ Aviso</strong>
-            </div>
-            <div class="toast-body">
-                Mensaje de notificación
-            </div>
+<!-- Contenedor de Alertas Toast Flotante en la esquina SUPERIOR DERECHA -->
+<div class="toast-container" style="position: fixed !important; top: 80px !important; right: 20px !important; bottom: auto !important; left: auto !important; width: auto !important; max-width: 350px !important; z-index: 9999 !important;">
+    <div id="liveToast" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000" style="width: 100% !important; background: white !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; border-radius: 8px !important;">
+        <div class="toast-header" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 8px 12px;">
+            <strong class="me-auto" style="font-weight: 600; color: #1e293b;">⚠️ Aviso</strong>
         </div>
+        <div class="toast-body" style="padding: 12px; color: #475569; font-size: 14px;">
+            Mensaje de notificación
+        </div>
+    </div>
+</div>
+<!-- Modal personalizado de advertencia de partida -->
+<<div id="customErrorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; max-width: 380px; width: 90%; box-shadow: 0 15px 30px rgba(0,0,0,0.2); text-align: center; animation: fadeIn 0.3s ease;">
+        <div style="font-size: 42px; margin-bottom: 8px;">⚠️</div>
+        <h3 id="customErrorTitle" style="margin: 0 0 8px 0; color: #1e293b; font-size: 18px; font-weight: 700;">Atención</h3>
+        <p id="customErrorMessage" style="margin: 0 0 20px 0; color: #64748b; font-size: 14px; line-height: 1.5;">
+            Mensaje de error aquí.
+        </p>
+        <button type="button" onclick="closeCustomErrorModal()" style="background: #7c3aed; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">Entendido</button>
     </div>
 </div>
 
@@ -188,12 +208,14 @@ $fechaActual = date('Y-m-d');
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
+
 <script>
     // 🔥 NUEVO: Obtener tab actual desde PHP
     const currentTab = "<?= $tabKey ?>";
     const uploadSucceeded = "<?= ($_GET['uploaded'] ?? '') === '1' ? '1' : '0' ?>" === "1";
     const serverQrPath = "<?php echo $qrPath; ?>";
     const mainForm = document.querySelector('.needs-validation');
+    const enviosHoy = <?php echo $jsonEnvios; ?>;
 
     // ================================
     // VARIABLES GLOBALES
@@ -258,58 +280,148 @@ $fechaActual = date('Y-m-d');
         localStorage.removeItem('qr_form_partida');
     }
 
-   function validarYSubir(form) {
-    // 1. Capturar los campos
-    const titulo = document.getElementById('title');
-    const partida = document.getElementById('partida');
-    const archivo = document.getElementById('pdf');
+    function validarYSubir(form) {
+        // 🛡️ CANDADO DE DUPLICIDAD: Si ya se está procesando, bloqueamos clics extra
+        if (form.dataset.submitting === 'true') return;
+        form.dataset.submitting = 'true';
 
-    // 2. Validar que no estén vacíos
-    if (titulo && titulo.value.trim() === '') {
-        showToast('Por favor, ingresa el nombre del título.', 'error');
-        titulo.focus();
-        return;
-    }
+        // 1. Capturar los campos
+        const titulo = document.getElementById('title');
+        const partida = document.getElementById('partida');
+        const archivo = document.getElementById('pdf');
 
-    if (partida && partida.value.trim() === '') {
-        showToast('Por favor, ingresa la partida electrónica.', 'error');
-        partida.focus();
-        return;
-    }
-
-    if (archivo && archivo.files.length === 0) {
-        showToast('Por favor, selecciona un archivo PDF válido.', 'error');
-        return;
-    }
-
-    // 3. Capturar los valores para mostrarlos en la ventana de confirmación
-    const valorTitulo = titulo.value.trim();
-    const valorPartida = partida.value.trim();
-    const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
-
-    // 4. Mostrar la ventana elegante con el resumen para verificar
-    Swal.fire({
-        title: 'Verifica los datos de envío',
-        html: `
-            <div style="text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px;">
-                <p style="margin: 4px 0;"><strong>Título:</strong> ${valorTitulo}</p>
-                <p style="margin: 4px 0;"><strong>Partida:</strong> ${valorPartida}</p>
-                <p style="margin: 4px 0;"><strong>Archivo:</strong> ${nombreArchivo}</p>
-            </div>
-            <p style="margin-top: 12px; font-size: 14px;">¿Deseas proceder con la subida?</p>
-        `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#2563eb', // Azul corporativo
-        cancelButtonColor: '#dc2626',  // Rojo cancelar
-        confirmButtonText: 'Sí, subir archivo',
-        cancelButtonText: 'Revisar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit(); // Envía el formulario si todo está correcto
+        // 2. Validar que no estén vacíos
+        if (titulo && titulo.value.trim() === '') {
+            showToast('Por favor, ingresa el nombre del título.', 'error');
+            titulo.focus();
+            form.dataset.submitting = 'false'; // Liberamos el candado si falla
+            return;
         }
-    });
-}
+
+        if (partida && partida.value.trim() === '') {
+            showToast('Por favor, ingresa la partida electrónica.', 'error');
+            partida.focus();
+            form.dataset.submitting = 'false';
+            return;
+        }
+
+        if (archivo && archivo.files.length === 0) {
+            showToast('Por favor, selecciona un archivo PDF válido.', 'error');
+            form.dataset.submitting = 'false';
+            return;
+        }
+
+        const valorTitulo = titulo.value.trim();
+        const valorPartida = partida.value.trim();
+        const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
+
+        // 3. Mostrar la ventana de confirmación de SweetAlert2
+        Swal.fire({
+            title: 'Verifica los datos de envío',
+            html: `
+        <div style="text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px;">
+            <p style="margin: 4px 0;"><strong>Título:</strong> ${valorTitulo}</p>
+            <p style="margin: 4px 0;"><strong>Partida:</strong> ${valorPartida}</p>
+            <p style="margin: 4px 0;"><strong>Archivo:</strong> ${nombreArchivo}</p>
+        </div>
+        <p style="margin-top: 12px; font-size: 14px;">¿Deseas proceder con la subida?</p>
+        `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#dc2626',
+            confirmButtonText: 'Sí, subir archivo',
+            cancelButtonText: 'Revisar',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar alerta de carga bloqueante
+                Swal.fire({
+                    title: 'Subiendo archivo...',
+                    text: 'Por favor espere un momento.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Creamos un FormData con los datos del formulario
+                const formData = new FormData(form);
+
+                // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
+                fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
+                        } else {
+                            Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
+                            form.dataset.submitting = 'false';
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
+                        form.dataset.submitting = 'false';
+                    });
+            } else {
+                // Si el usuario hace clic en "Revisar", liberamos el candado
+                form.dataset.submitting = 'false';
+            }
+        });
+    }
+
+    function mostrarHistorialHoy() {
+        if (!enviosHoy || enviosHoy.length === 0) {
+            Swal.fire({
+                title: 'Historial de hoy',
+                text: 'No hay registros de actividad en el sistema para el día de hoy.',
+                icon: 'info',
+                confirmButtonColor: '#2563eb'
+            });
+            return;
+        }
+
+        // Construimos las filas de la tabla con los datos que llegaron
+        let filasHTML = '';
+        enviosHoy.forEach((item) => {
+            filasHTML += `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 8px; text-align: center; color: #64748b; font-size: 12px;">${item.hora}</td>
+                    <td style="padding: 8px; font-weight: 500; color: #1e293b;">${item.user_name || 'Sistema'}</td>
+                    <td style="padding: 8px; color: #475569;">${item.action}</td>
+                    <td style="padding: 8px; color: #475569; font-size: 13px;">${item.description || 'Sin descripción'}</td>
+                </tr>
+            `;
+        });
+
+        // Mostramos la ventana flotante
+        Swal.fire({
+            title: '📋 Registros y Envíos de Hoy',
+            html: `
+                <div style="max-height: 280px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead style="background: #f8fafc; position: sticky; top: 0; border-bottom: 2px solid #e2e8f0;">
+                            <tr>
+                                <th style="padding: 8px; text-align: center;">Hora</th>
+                                <th style="padding: 8px;">Usuario</th>
+                                <th style="padding: 8px;">Acción</th>
+                                <th style="padding: 8px;">Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filasHTML}
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 12px; font-size: 12px; color: #64748b;">Total de acciones hoy: <strong>${enviosHoy.length}</strong></p>
+            `,
+            width: '650px',
+            confirmButtonText: 'Cerrar',
+            confirmButtonColor: '#2563eb'
+        });
+    }
 
     document.addEventListener("DOMContentLoaded", function() {
         if (uploadSucceeded) {
@@ -383,10 +495,10 @@ $fechaActual = date('Y-m-d');
         if (file && file.type === 'application/pdf') {
             const fileName = file.name.replace(/\.pdf$/i, '');
 
-            if (!titleInput.value) {
-                titleInput.value = fileName;
-                localStorage.setItem('qr_form_title', fileName);
-            }
+            // 🔥 MODIFICADO: Se actualiza siempre, ignorando si ya tenía texto
+            titleInput.value = fileName;
+            localStorage.setItem('qr_form_title', fileName);
+
             if (!tituloNumberInput.value) {
                 tituloNumberInput.value = fileName;
             }
@@ -563,5 +675,133 @@ $fechaActual = date('Y-m-d');
             delay: 3000
         });
         toast.show();
+    }
+    // ================================
+    // SINCRONIZAR Y PERSISTIR INPUTS (Protegido)
+    // ================================
+    if (titleInput && tituloNumberInput) {
+        titleInput.addEventListener('input', function() {
+            localStorage.setItem('qr_form_title', this.value);
+            tituloNumberInput.value = this.value;
+        });
+        saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
+    }
+
+    if (partidaInput && numberInput) {
+        partidaInput.addEventListener('input', function() {
+            localStorage.setItem('qr_form_partida', this.value);
+            numberInput.value = this.value;
+        });
+        saveToLocalStorageOnChange(numberInput, 'qr_form_partida');
+    }
+
+    const clearFormBtn = document.getElementById("clearForm");
+    if (clearFormBtn && mainForm) {
+        clearFormBtn.addEventListener("click", function() {
+            resetGenerationFormState();
+            mainForm.classList.remove('was-validated');
+            window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
+            showToast("Formulario y datos persistentes limpiados.", "success");
+        });
+    }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Capturar todos los campos de partida disponibles en la vista
+        const inputsPartida = [
+            document.getElementById('partida'),
+            document.getElementById('inputBuscarPartida')
+        ].filter(Boolean);
+
+        const btnSubir = document.getElementById('btnSubirArchivo');
+
+        // 2. Aplicar el filtro carácter por carácter en tiempo real
+        inputsPartida.forEach(inputPartida => {
+            inputPartida.setAttribute('maxlength', '9');
+
+            inputPartida.addEventListener('input', function(e) {
+                let val = this.value;
+                let cleaned = '';
+
+                for (let i = 0; i < val.length && cleaned.length < 9; i++) {
+                    let char = val.charAt(i);
+
+                    if (cleaned.length === 0) {
+                        // Primer carácter: Puede ser una letra (A-Z) o un número del 1 al 9 (PROHIBIDO el 0 al inicio)
+                        if (/^[a-zA-Z1-9]$/.test(char)) {
+                            cleaned += (/[a-zA-Z]/.test(char) ? char.toUpperCase() : char);
+                        }
+                    } else if (cleaned.length === 1 && /^[a-zA-Z]$/.test(cleaned.charAt(0))) {
+                        // Segundo carácter (si el primero fue letra): Obligatoriamente un número del 1 al 9
+                        if (/^[1-9]$/.test(char)) {
+                            cleaned += char;
+                        }
+                    } else {
+                        // Demás caracteres: Números permitidos del 0 al 9
+                        if (/^[0-9]$/.test(char)) {
+                            cleaned += char;
+                        }
+                    }
+                }
+                this.value = cleaned;
+            });
+        });
+
+        // 3. Interceptar el botón de subida con validaciones ordenadas y únicas
+        if (btnSubir) {
+            const originalOnClick = btnSubir.onclick || btnSubir.getAttribute('onclick');
+
+            btnSubir.onclick = function(e) {
+                if (e) e.preventDefault();
+
+                const inputTitulo = document.getElementById('title') || document.querySelector('input[name="title"]');
+                const activePartida = document.getElementById('partida');
+
+                // PASO 1: Validar Título
+                if (inputTitulo && inputTitulo.value.trim() === '') {
+                    showCustomErrorModal('Campo Requerido', 'Por favor, ingrese el nombre del título antes de continuar.');
+                    inputTitulo.focus();
+                    return false;
+                }
+
+                // PASO 2: Validar Partida (Acepta exactamente 8 números o 1 letra + 8 números, sin ceros iniciales)
+                if (activePartida) {
+                    const valPartida = activePartida.value.trim();
+                    const regexPartida = /^([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})$/;
+
+                    if (!regexPartida.test(valPartida)) {
+                        showCustomErrorModal('Partida Inválida', 'La partida debe ser de 8 dígitos (ej. 12345678) o 1 letra seguida de 8 dígitos (ej. P12345678). El primer número nunca puede ser 0.');
+                        activePartida.focus();
+                        return false;
+                    }
+                }
+
+                // PASO 3: Ejecutar acción original (SweetAlert de confirmación)
+                if (typeof originalOnClick === 'function') {
+                    return originalOnClick.call(this, e);
+                } else if (typeof originalOnClick === 'string') {
+                    return eval(originalOnClick);
+                }
+            };
+        }
+    });
+
+    function showCustomErrorModal(title, message) {
+        const modal = document.getElementById('customErrorModal');
+        const titleEl = document.getElementById('customErrorTitle');
+        const msgEl = document.getElementById('customErrorMessage');
+        
+        if (modal && titleEl && msgEl) {
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeCustomErrorModal() {
+        const modal = document.getElementById('customErrorModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
 </script>
