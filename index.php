@@ -37,6 +37,12 @@ switch ($action) {
     case 'dashboard':
     case 'dasboard':
         AuthMiddleware::requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_GET['tab'] ?? '') === 'generarQR') {
+            require_once __DIR__ . '/controllers/QRController.php';
+            (new QRController())->generar();
+            exit;
+        }
         
         $audit = new AuditModel();
         $currentTab = $_GET['tab'] ?? 'default';
