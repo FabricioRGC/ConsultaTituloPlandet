@@ -54,7 +54,7 @@ class QRController
                 $_SESSION['audit_session_token'] ?? session_id()
             );
 
-            header("Location: /ConsultaTituloPlandet/index.php?action=dashboard&tab=generarQR&uploaded=1&qr=" . urlencode($qrPath));
+            header("Location: /ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1&qr=" . urlencode($qrPath));
             exit();
         }
 
