@@ -1,5 +1,9 @@
 <?php
+require_once __DIR__ . '/../../controllers/QRController.php';
+
 $tabKey = 'generarQR';
+
+$controller = new QRController();
 
 $usuarioId = $_SESSION['usuario_id'] ?? 0;
 $rolUsuario = $_SESSION['usuario_rol'] ?? 'user';
@@ -8,13 +12,19 @@ $auditModel = new AuditModel();
 $historialHoyDb = $auditModel->getTodayActivitiesForUserOrAdmin($usuarioId, $rolUsuario);
 
 // Preparamos el JSON de forma segura en PHP antes de pintarlo en el script
-$jsonEnvios = json_encode($historialHoyDb, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?: '[]';
+$jsonEnvios = json_encode($historialHoyDb, JSON_UNESCAPED_UNICODE);
 
 
 
+
+// 1. Manejo del Formulario de Subida (POST)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->generar();
+    // NOTA: Si generar() redirige, asegúrate de incluir &tab= en la URL de redirección
+}
 
 // 2. Capturar QR (Si el controlador ha redirigido con el path)
-$qrPath = $_GET['qr'] ?? '';
+$qrPath = isset($_GET['qr']) ? htmlspecialchars($_GET['qr']) : "";
 
 // 3. Obtener fecha actual en formato YYYY-MM-DD
 $fechaActual = date('Y-m-d');
@@ -33,7 +43,7 @@ $fechaActual = date('Y-m-d');
                         <h2 class="card-title">📤 Subir PDF</h2>
 
                         <form id="formGenerarQR" method="post" enctype="multipart/form-data" class="needs-validation" novalidate
-                            action="?action=dashboard&tab=<?= urlencode($tabKey) ?>">
+                            action="?action=dasboard&tab=<?= urlencode($tabKey) ?>">
 
                             <button id="clearForm" type="button" class="btn-action btn-clear-form form-clear-btn">
                                 <span>🗑️</span> Limpiar Formulario
@@ -145,7 +155,7 @@ $fechaActual = date('Y-m-d');
                         <div class="qr-preview-container">
                             <p class="preview-label">Vista previa del código QR:</p>
                             <img id="qr-preview" class="qr-preview" alt="Vista previa del QR"
-                                <?php if ($qrPath !== ''): ?>src="<?= htmlspecialchars($qrPath, ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>>
+                                src="<?= $qrPath ?>">
                         </div>
                     </section>
                 </div>
@@ -203,7 +213,7 @@ $fechaActual = date('Y-m-d');
     // 🔥 NUEVO: Obtener tab actual desde PHP
     const currentTab = "<?= $tabKey ?>";
     const uploadSucceeded = "<?= ($_GET['uploaded'] ?? '') === '1' ? '1' : '0' ?>" === "1";
-    const serverQrPath = <?= json_encode($qrPath, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const serverQrPath = "<?php echo $qrPath; ?>";
     const mainForm = document.querySelector('.needs-validation');
     const enviosHoy = <?php echo $jsonEnvios; ?>;
 
@@ -306,15 +316,6 @@ $fechaActual = date('Y-m-d');
         const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
 
         // 3. Mostrar la ventana de confirmación de SweetAlert2
-        if (typeof Swal === 'undefined') {
-            if (window.confirm(`¿Subir el archivo ${nombreArchivo} con el título ${valorTitulo} y la partida ${valorPartida}?`)) {
-                form.submit();
-            } else {
-                form.dataset.submitting = 'false';
-            }
-            return;
-        }
-
         Swal.fire({
             title: 'Verifica los datos de envío',
             html: `
@@ -344,7 +345,26 @@ $fechaActual = date('Y-m-d');
                     }
                 });
 
-                form.submit();
+                // Creamos un FormData con los datos del formulario
+                const formData = new FormData(form);
+
+                // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
+                fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
+                        } else {
+                            Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
+                            form.dataset.submitting = 'false';
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
+                        form.dataset.submitting = 'false';
+                    });
             } else {
                 // Si el usuario hace clic en "Revisar", liberamos el candado
                 form.dataset.submitting = 'false';
@@ -479,11 +499,9 @@ $fechaActual = date('Y-m-d');
             titleInput.value = fileName;
             localStorage.setItem('qr_form_title', fileName);
 
-
             if (!tituloNumberInput.value) {
                 tituloNumberInput.value = fileName;
             }
-
 
             const fileURL = URL.createObjectURL(file);
             // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
@@ -653,12 +671,6 @@ $fechaActual = date('Y-m-d');
             if (toastHeader) toastHeader.textContent = "⚠️ Aviso";
         }
 
-        if (typeof bootstrap === 'undefined' || !bootstrap.Toast) {
-            toastEl.classList.add('show');
-            setTimeout(() => toastEl.classList.remove('show'), 3000);
-            return;
-        }
-
         const toast = new bootstrap.Toast(toastEl, {
             delay: 3000
         });
@@ -690,6 +702,7 @@ $fechaActual = date('Y-m-d');
             mainForm.classList.remove('was-validated');
             window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
             showToast("Formulario y datos persistentes limpiados.", "success");
+            
         });
     }
 </script>
