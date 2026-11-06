@@ -40,13 +40,12 @@ $fechaActual = date('Y-m-d');
             <aside class="left-panel">
                 <div class="left-panel-scroll">
                     <section class="card">
-                        <h2 class="card-title">📤 Subir PDF</h2>
+                        <h2 class="card-title"> Subir PDF</h2>
 
                         <form id="formGenerarQR" method="post" enctype="multipart/form-data" class="needs-validation" novalidate
                             action="?action=dasboard&tab=<?= urlencode($tabKey) ?>">
 
-                            <button id="clearForm" type="button" class="btn-action btn-clear-form form-clear-btn">
-                                <span>🗑️</span> Limpiar Formulario
+                            <button id="clearForm" type="button" class="btn-action btn-clear-form form-clear-btn"> Limpiar Formulario
                             </button>
 
                             <div class="form-group">
@@ -78,10 +77,10 @@ $fechaActual = date('Y-m-d');
 
                             <div style="display: flex; gap: 8px; margin-top: 15px;">
                                 <button type="button" class="btn btn-submit" onclick="validarYSubir(this.form);" style="flex: 2;">
-                                    📁 Subir Archivo
+                                     Subir Archivo
                                 </button>
                                 <button type="button" class="btn" onclick="mostrarHistorialHoy()" style="flex: 1; background: #e2e8f0; color: #1e293b; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">
-                                    📋 Historial
+                                     Historial
                                 </button>
                             </div>
                         </form>
@@ -164,12 +163,12 @@ $fechaActual = date('Y-m-d');
             <!-- PANEL DERECHO -->
             <main class="right-panel">
                 <div class="preview-container">
-                    <h2 class="preview-title">📄 Vista Previa del Documento</h2>
+                    <h2 class="preview-title"> Vista Previa del Documento</h2>
                     <iframe class="pdf-viewer" id="pdfViewer" title="Visor de PDF original"></iframe>
                 </div>
 
                 <div class="preview-container">
-                    <h2 class="preview-title">🔍 Previsualización con QR</h2>
+                    <h2 class="preview-title"> Previsualización con QR</h2>
                     <iframe class="pdf-viewer" id="pdf-preview" title="Previsualización del PDF con QR"></iframe>
                 </div>
             </main>
