@@ -17,7 +17,15 @@ class QRController
         $partida = $_POST['partida'] ?? '';
         $fecha = $_POST['fecha'] ?? '';
 
-        if ($pdf['type'] !== 'application/pdf') {
+        if (($pdf['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || !is_uploaded_file($pdf['tmp_name'] ?? '')) {
+            http_response_code(400);
+            echo "No se pudo recibir el archivo PDF.";
+            return;
+        }
+
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($pdf['tmp_name']);
+        if ($mime !== 'application/pdf') {
+            http_response_code(400);
             echo "Debe subir un PDF valido.";
             return;
         }

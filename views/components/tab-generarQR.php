@@ -57,7 +57,7 @@ $fechaActual = date('Y-m-d');
                             <div class="form-group">
                                 <label for="partida" class="form-label">Partida Electrónica:</label>
                                 <input type="text" class="form-control" id="partida" name="partida"
-                                    maxlength="9" pattern="([A-Z][1va-9][0-9]{7}|[1-9][0-9]{7})" title="Debe contener 8 números (sin empezar en 0) o 1 letra seguida de 8 números" placeholder="P12345678 o 12345678" required>
+                                    maxlength="9" pattern="([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})" title="Debe contener 8 números (sin empezar en 0) o 1 letra seguida de 8 números" placeholder="P12345678 o 12345678" required>
                                 <div class="invalid-feedback">El formato debe ser 1 letra y 8 números exactos.</div>
                             </div>
 
@@ -344,26 +344,8 @@ $fechaActual = date('Y-m-d');
                         }
                     });
 
-                    // Creamos un FormData con los datos del formulario
-                    const formData = new FormData(form);
-
-                    // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
-                    fetch(form.action, {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
-                            } else {
-                                Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
-                                form.dataset.submitting = 'false';
-                            }
-                        })
-                        .catch(error => {
-                            Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
-                            form.dataset.submitting = 'false';
-                        });
+                    // El controlador redirige al dashboard con el QR generado.
+                    form.submit();
                 } else {
                     // Si el usuario hace clic en "Revisar", liberamos el candado
                     form.dataset.submitting = 'false';
