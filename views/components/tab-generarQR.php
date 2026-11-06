@@ -57,7 +57,7 @@ $fechaActual = date('Y-m-d');
                             <div class="form-group">
                                 <label for="partida" class="form-label">Partida Electrónica:</label>
                                 <input type="text" class="form-control" id="partida" name="partida"
-                                    maxlength="9" pattern="([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})" title="Debe contener 8 números (sin empezar en 0) o 1 letra seguida de 8 números" placeholder="P12345678 o 12345678" required>
+                                    maxlength="9" pattern="([A-Z][1va-9][0-9]{7}|[1-9][0-9]{7})" title="Debe contener 8 números (sin empezar en 0) o 1 letra seguida de 8 números" placeholder="P12345678 o 12345678" required>
                                 <div class="invalid-feedback">El formato debe ser 1 letra y 8 números exactos.</div>
                             </div>
 
@@ -76,11 +76,11 @@ $fechaActual = date('Y-m-d');
                             </div>
 
                             <div style="display: flex; gap: 8px; margin-top: 15px;">
-                                <button type="button" class="btn btn-submit" onclick="validarYSubir(this.form);" style="flex: 2;">
-                                     Subir Archivo
+                                <button type="button" class="btn btn-primary btn-submit" onclick="validarYSubir(this.form);" style="flex: 2;">
+                                    Subir Archivo
                                 </button>
                                 <button type="button" class="btn" onclick="mostrarHistorialHoy()" style="flex: 1; background: #e2e8f0; color: #1e293b; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">
-                                     Historial
+                                    Historial
                                 </button>
                             </div>
                         </form>
@@ -198,126 +198,126 @@ $fechaActual = date('Y-m-d');
         </p>
         <button type="button" onclick="closeCustomErrorModal()" style="background: #7c3aed; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">Entendido</button>
     </div>
-</div>
+    </div>
 
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
 
-<script>
-    // 🔥 NUEVO: Obtener tab actual desde PHP
-    const currentTab = "<?= $tabKey ?>";
-    const uploadSucceeded = "<?= ($_GET['uploaded'] ?? '') === '1' ? '1' : '0' ?>" === "1";
-    const serverQrPath = "<?php echo $qrPath; ?>";
-    const mainForm = document.querySelector('.needs-validation');
-    const enviosHoy = <?php echo $jsonEnvios; ?>;
+    <script>
+        // 🔥 NUEVO: Obtener tab actual desde PHP
+        const currentTab = "<?= $tabKey ?>";
+        const uploadSucceeded = "<?= ($_GET['uploaded'] ?? '') === '1' ? '1' : '0' ?>" === "1";
+        const serverQrPath = "<?php echo $qrPath; ?>";
+        const mainForm = document.querySelector('.needs-validation');
+        const enviosHoy = <?php echo $jsonEnvios; ?>;
 
-    // ================================
-    // VARIABLES GLOBALES
-    // ================================
-    const pdfInput = document.getElementById("pdf");
-    const pdfViewer = document.getElementById("pdfViewer");
-    const titleInput = document.getElementById("title");
-    const partidaInput = document.getElementById("partida");
-    const tituloNumberInput = document.getElementById("number-titulo");
-    const numberInput = document.getElementById("number-input");
+        // ================================
+        // VARIABLES GLOBALES
+        // ================================
+        const pdfInput = document.getElementById("pdf");
+        const pdfViewer = document.getElementById("pdfViewer");
+        const titleInput = document.getElementById("title");
+        const partidaInput = document.getElementById("partida");
+        const tituloNumberInput = document.getElementById("number-titulo");
+        const numberInput = document.getElementById("number-input");
 
-    const qrPreview = document.getElementById("qr-preview");
-    const qrFile = document.getElementById("qr-code-file");
-    const previewBtn = document.getElementById("preview-button");
-    const exportBtn = document.getElementById("export-button");
-    const pdfPreview = document.getElementById("pdf-preview");
-    const qrX = document.getElementById("qr-x");
-    const qrY = document.getElementById("qr-y");
-    const numX = document.getElementById("num-x");
-    const numY = document.getElementById("num-y");
+        const qrPreview = document.getElementById("qr-preview");
+        const qrFile = document.getElementById("qr-code-file");
+        const previewBtn = document.getElementById("preview-button");
+        const exportBtn = document.getElementById("export-button");
+        const pdfPreview = document.getElementById("pdf-preview");
+        const qrX = document.getElementById("qr-x");
+        const qrY = document.getElementById("qr-y");
+        const numX = document.getElementById("num-x");
+        const numY = document.getElementById("num-y");
 
-    let qrCodeImageUrl = null;
+        let qrCodeImageUrl = null;
 
-    // ================================
-    // FUNCIONES DE PERSISTENCIA (LOCALSTORAGE)
-    // ================================
+        // ================================
+        // FUNCIONES DE PERSISTENCIA (LOCALSTORAGE)
+        // ================================
 
-    function loadTitleAndPartida() {
-        const storedTitle = localStorage.getItem('qr_form_title');
-        const storedPartida = localStorage.getItem('qr_form_partida');
+        function loadTitleAndPartida() {
+            const storedTitle = localStorage.getItem('qr_form_title');
+            const storedPartida = localStorage.getItem('qr_form_partida');
 
-        if (storedTitle) {
-            titleInput.value = storedTitle;
-            tituloNumberInput.value = storedTitle;
-        }
-        if (storedPartida) {
-            partidaInput.value = storedPartida;
-            numberInput.value = storedPartida;
-        }
-    }
-
-    function saveToLocalStorageOnChange(element, key) {
-        element.addEventListener('input', function() {
-            localStorage.setItem(key, this.value);
-        });
-    }
-
-    // ================================
-    // CARGA INICIAL DE DATOS
-    // ================================
-    function resetGenerationFormState() {
-        mainForm.reset();
-        titleInput.value = "";
-        partidaInput.value = "";
-        tituloNumberInput.value = "";
-        numberInput.value = "";
-        pdfViewer.src = "";
-        pdfPreview.src = "";
-        qrPreview.src = "";
-        qrCodeImageUrl = null;
-        localStorage.removeItem('qr_form_title');
-        localStorage.removeItem('qr_form_partida');
-    }
-
-    function validarYSubir(form) {
-        // 🛡️ CANDADO DE DUPLICIDAD: Si ya se está procesando, bloqueamos clics extra
-        if (form.dataset.submitting === 'true') return;
-        form.dataset.submitting = 'true';
-
-        // 1. Capturar los campos
-        const titulo = document.getElementById('title');
-        const partida = document.getElementById('partida');
-        const archivo = document.getElementById('pdf');
-
-        // 2. Validar que no estén vacíos
-        if (titulo && titulo.value.trim() === '') {
-            showToast('Por favor, ingresa el nombre del título.', 'error');
-            titulo.focus();
-            form.dataset.submitting = 'false'; // Liberamos el candado si falla
-            return;
+            if (storedTitle) {
+                titleInput.value = storedTitle;
+                tituloNumberInput.value = storedTitle;
+            }
+            if (storedPartida) {
+                partidaInput.value = storedPartida;
+                numberInput.value = storedPartida;
+            }
         }
 
-        if (partida && partida.value.trim() === '') {
-            showToast('Por favor, ingresa la partida electrónica.', 'error');
-            partida.focus();
-            form.dataset.submitting = 'false';
-            return;
+        function saveToLocalStorageOnChange(element, key) {
+            element.addEventListener('input', function() {
+                localStorage.setItem(key, this.value);
+            });
         }
 
-        if (archivo && archivo.files.length === 0) {
-            showToast('Por favor, selecciona un archivo PDF válido.', 'error');
-            form.dataset.submitting = 'false';
-            return;
+        // ================================
+        // CARGA INICIAL DE DATOS
+        // ================================
+        function resetGenerationFormState() {
+            mainForm.reset();
+            titleInput.value = "";
+            partidaInput.value = "";
+            tituloNumberInput.value = "";
+            numberInput.value = "";
+            pdfViewer.src = "";
+            pdfPreview.src = "";
+            qrPreview.src = "";
+            qrCodeImageUrl = null;
+            localStorage.removeItem('qr_form_title');
+            localStorage.removeItem('qr_form_partida');
         }
 
-        const valorTitulo = titulo.value.trim();
-        const valorPartida = partida.value.trim();
-        const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
+        function validarYSubir(form) {
+            // 🛡️ CANDADO DE DUPLICIDAD: Si ya se está procesando, bloqueamos clics extra
+            if (form.dataset.submitting === 'true') return;
+            form.dataset.submitting = 'true';
 
-        // 3. Mostrar la ventana de confirmación de SweetAlert2
-        Swal.fire({
-            title: 'Verifica los datos de envío',
-            html: `
+            // 1. Capturar los campos
+            const titulo = document.getElementById('title');
+            const partida = document.getElementById('partida');
+            const archivo = document.getElementById('pdf');
+
+            // 2. Validar que no estén vacíos
+            if (titulo && titulo.value.trim() === '') {
+                showToast('Por favor, ingresa el nombre del título.', 'error');
+                titulo.focus();
+                form.dataset.submitting = 'false'; // Liberamos el candado si falla
+                return;
+            }
+
+            if (partida && partida.value.trim() === '') {
+                showToast('Por favor, ingresa la partida electrónica.', 'error');
+                partida.focus();
+                form.dataset.submitting = 'false';
+                return;
+            }
+
+            if (archivo && archivo.files.length === 0) {
+                showToast('Por favor, selecciona un archivo PDF válido.', 'error');
+                form.dataset.submitting = 'false';
+                return;
+            }
+
+            const valorTitulo = titulo.value.trim();
+            const valorPartida = partida.value.trim();
+            const nombreArchivo = archivo.files[0] ? archivo.files[0].name : 'Sin archivo';
+
+            // 3. Mostrar la ventana de confirmación de SweetAlert2
+            Swal.fire({
+                title: 'Verifica los datos de envío',
+                html: `
         <div style="text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px;">
             <p style="margin: 4px 0;"><strong>Título:</strong> ${valorTitulo}</p>
             <p style="margin: 4px 0;"><strong>Partida:</strong> ${valorPartida}</p>
@@ -325,67 +325,67 @@ $fechaActual = date('Y-m-d');
         </div>
         <p style="margin-top: 12px; font-size: 14px;">¿Deseas proceder con la subida?</p>
         `,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#2563eb',
-            cancelButtonColor: '#dc2626',
-            confirmButtonText: 'Sí, subir archivo',
-            cancelButtonText: 'Revisar',
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Mostrar alerta de carga bloqueante
-                Swal.fire({
-                    title: 'Subiendo archivo...',
-                    text: 'Por favor espere un momento.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Creamos un FormData con los datos del formulario
-                const formData = new FormData(form);
-
-                // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
-                fetch(form.action, {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
-                        } else {
-                            Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
-                            form.dataset.submitting = 'false';
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#dc2626',
+                confirmButtonText: 'Sí, subir archivo',
+                cancelButtonText: 'Revisar',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mostrar alerta de carga bloqueante
+                    Swal.fire({
+                        title: 'Subiendo archivo...',
+                        text: 'Por favor espere un momento.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
                         }
-                    })
-                    .catch(error => {
-                        Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
-                        form.dataset.submitting = 'false';
                     });
-            } else {
-                // Si el usuario hace clic en "Revisar", liberamos el candado
-                form.dataset.submitting = 'false';
-            }
-        });
-    }
 
-    function mostrarHistorialHoy() {
-        if (!enviosHoy || enviosHoy.length === 0) {
-            Swal.fire({
-                title: 'Historial de hoy',
-                text: 'No hay registros de actividad en el sistema para el día de hoy.',
-                icon: 'info',
-                confirmButtonColor: '#2563eb'
+                    // Creamos un FormData con los datos del formulario
+                    const formData = new FormData(form);
+
+                    // Enviamos usando Fetch para garantizar una sola petición HTTP estricta
+                    fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = '/ConsultaTituloPlandet/index.php?action=dasboard&tab=generarQR&uploaded=1';
+                            } else {
+                                Swal.fire('Error', 'Hubo un problema al procesar la subida.', 'error');
+                                form.dataset.submitting = 'false';
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
+                            form.dataset.submitting = 'false';
+                        });
+                } else {
+                    // Si el usuario hace clic en "Revisar", liberamos el candado
+                    form.dataset.submitting = 'false';
+                }
             });
-            return;
         }
 
-        // Construimos las filas de la tabla con los datos que llegaron
-        let filasHTML = '';
-        enviosHoy.forEach((item) => {
-            filasHTML += `
+        function mostrarHistorialHoy() {
+            if (!enviosHoy || enviosHoy.length === 0) {
+                Swal.fire({
+                    title: 'Historial de hoy',
+                    text: 'No hay registros de actividad en el sistema para el día de hoy.',
+                    icon: 'info',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
+
+            // Construimos las filas de la tabla con los datos que llegaron
+            let filasHTML = '';
+            enviosHoy.forEach((item) => {
+                filasHTML += `
                 <tr style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 8px; text-align: center; color: #64748b; font-size: 12px;">${item.hora}</td>
                     <td style="padding: 8px; font-weight: 500; color: #1e293b;">${item.user_name || 'Sistema'}</td>
@@ -393,12 +393,12 @@ $fechaActual = date('Y-m-d');
                     <td style="padding: 8px; color: #475569; font-size: 13px;">${item.description || 'Sin descripción'}</td>
                 </tr>
             `;
-        });
+            });
 
-        // Mostramos la ventana flotante
-        Swal.fire({
-            title: '📋 Registros y Envíos de Hoy',
-            html: `
+            // Mostramos la ventana flotante
+            Swal.fire({
+                title: '📋 Registros y Envíos de Hoy',
+                html: `
                 <div style="max-height: 280px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
                         <thead style="background: #f8fafc; position: sticky; top: 0; border-bottom: 2px solid #e2e8f0;">
@@ -416,392 +416,392 @@ $fechaActual = date('Y-m-d');
                 </div>
                 <p style="margin-top: 12px; font-size: 12px; color: #64748b;">Total de acciones hoy: <strong>${enviosHoy.length}</strong></p>
             `,
-            width: '650px',
-            confirmButtonText: 'Cerrar',
-            confirmButtonColor: '#2563eb'
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        if (uploadSucceeded) {
-            resetGenerationFormState();
-            const url = new URL(window.location.href);
-            url.searchParams.delete('uploaded');
-            window.history.replaceState({}, '', url.toString());
+                width: '650px',
+                confirmButtonText: 'Cerrar',
+                confirmButtonColor: '#2563eb'
+            });
         }
 
-        loadTitleAndPartida();
-
-        if (serverQrPath) {
-            qrPreview.src = serverQrPath;
-            qrCodeImageUrl = serverQrPath;
-        }
-    });
-
-    // ================================
-    // SINCRONIZAR Y PERSISTIR INPUTS
-    // ================================
-
-    titleInput.addEventListener('input', function() {
-        localStorage.setItem('qr_form_title', this.value);
-        tituloNumberInput.value = this.value;
-    });
-
-    partidaInput.addEventListener('input', function() {
-        localStorage.setItem('qr_form_partida', this.value);
-        numberInput.value = this.value;
-    });
-
-    saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
-    saveToLocalStorageOnChange(numberInput, 'qr_form_partida');
-
-
-    // ================================
-    // FUNCIONES DE LIMPIEZA
-    // ================================
-    document.getElementById("clearForm").addEventListener("click", function() {
-        resetGenerationFormState();
-
-        mainForm.classList.remove('was-validated');
-
-        // 🔥 MODIFICADO: Mantener tab al limpiar
-        window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
-
-        showToast("Formulario y datos persistentes limpiados.", "success");
-    });
-
-    // ================================
-    // VALIDACIÓN DE FORMULARIOS
-    // ================================
-    (function() {
-        'use strict';
-        Array.prototype.slice.call(document.querySelectorAll('.needs-validation')).forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
-
-    // ================================
-    // CARGA Y PREVISUALIZACIÓN DEL PDF
-    // ================================
-    pdfInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file && file.type === 'application/pdf') {
-            const fileName = file.name.replace(/\.pdf$/i, '');
-
-            // 🔥 MODIFICADO: Se actualiza siempre, ignorando si ya tenía texto
-            titleInput.value = fileName;
-            localStorage.setItem('qr_form_title', fileName);
-
-            if (!tituloNumberInput.value) {
-                tituloNumberInput.value = fileName;
+        document.addEventListener("DOMContentLoaded", function() {
+            if (uploadSucceeded) {
+                resetGenerationFormState();
+                const url = new URL(window.location.href);
+                url.searchParams.delete('uploaded');
+                window.history.replaceState({}, '', url.toString());
             }
 
-            const fileURL = URL.createObjectURL(file);
-            // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
-            pdfViewer.src = fileURL + '#toolbar=1&navpanes=0&scrollbar=1';
+            loadTitleAndPartida();
 
-            showToast("PDF cargado correctamente", "success");
-        } else {
-            showToast('Por favor, selecciona un archivo PDF válido.', "danger");
-            pdfInput.value = "";
-        }
-    });
-
-    // ================================
-    // CARGA MANUAL DE QR
-    // ================================
-    qrFile.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const imageUrl = URL.createObjectURL(file);
-            qrPreview.src = imageUrl;
-            qrCodeImageUrl = imageUrl;
-            showToast("Código QR cargado correctamente", "success");
-        } else {
-            showToast("Por favor selecciona una imagen válida", "warning");
-        }
-    });
-
-    document.getElementById("upload-button").addEventListener('click', function() {
-        qrFile.click();
-    });
-
-    // ================================
-    // OBTENER VALORES DE CONFIGURACIÓN
-    // ================================
-    function getConfigurationValues() {
-        return {
-            partidaValue: numberInput.value.trim(),
-            tituloValue: tituloNumberInput.value.trim(),
-            includeQR: document.getElementById('includeQR').checked,
-            includePartida: document.getElementById('includePartida').checked,
-            qrXVal: parseFloat(qrX.value),
-            qrYVal: parseFloat(qrY.value),
-            numXVal: parseFloat(numX.value),
-            numYVal: parseFloat(numY.value),
-            qrCodeImageUrl: qrCodeImageUrl
-        };
-    }
-
-    // ================================
-    // GENERACIÓN DE PDF CON JSPDF
-    // ================================
-    function generatePDF(callback) {
-        const config = getConfigurationValues();
-
-        if (config.includeQR && !config.qrCodeImageUrl) {
-            showToast("Debes cargar o generar un código QR para incluirlo.", "danger");
-            return;
-        }
-
-        const {
-            jsPDF
-        } = window.jspdf;
-        const doc = new jsPDF({
-            orientation: 'landscape',
-            unit: 'in',
-            format: [11.69, 16.54]
-        });
-
-        if (config.includeQR && config.qrCodeImageUrl) {
-            const qrImage = new Image();
-            qrImage.crossOrigin = "anonymous";
-            qrImage.src = config.qrCodeImageUrl;
-
-            qrImage.onload = function() {
-                try {
-                    doc.addImage(qrImage, 'PNG', config.qrXVal, config.qrYVal, 1.10, 1.10);
-
-                    if (config.includePartida && config.partidaValue) {
-                        doc.setFontSize(14);
-                        doc.text(config.partidaValue, config.numXVal, config.numYVal);
-                    }
-                    callback(doc);
-                } catch (error) {
-                    console.error("Error al agregar imagen QR:", error);
-                    showToast("Error al agregar el código QR al PDF", "danger");
-                }
-            };
-
-            qrImage.onerror = function() {
-                console.error("Error al cargar imagen QR");
-                showToast("Error al cargar la imagen del código QR", "danger");
-            };
-        } else {
-            if (config.includePartida && config.partidaValue) {
-                doc.setFontSize(14);
-                doc.text(config.partidaValue, config.numXVal, config.numYVal);
-            }
-            callback(doc);
-        }
-    }
-
-    // ================================
-    // PREVISUALIZAR PDF
-    // ================================
-    previewBtn.addEventListener('click', function() {
-        const config = getConfigurationValues();
-
-        // 🔥 REMOVIDO: Validación de título
-        // Ya no es necesario tener un título para previsualizar
-
-        generatePDF(function(doc) {
-            if (doc) {
-                // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
-                const pdfDataUri = doc.output('datauristring');
-                pdfPreview.src = pdfDataUri + '#toolbar=1&navpanes=0&scrollbar=1';
-                showToast("Vista previa generada correctamente", "success");
+            if (serverQrPath) {
+                qrPreview.src = serverQrPath;
+                qrCodeImageUrl = serverQrPath;
             }
         });
-    });
 
-    // ================================
-    // EXPORTAR PDF
-    // ================================
-    exportBtn.addEventListener('click', function() {
-        const config = getConfigurationValues();
+        // ================================
+        // SINCRONIZAR Y PERSISTIR INPUTS
+        // ================================
 
-        // 🔥 MODIFICADO: Usar título o nombre por defecto
-        const fileName = config.tituloValue || 'documento-' + Date.now();
-
-        generatePDF(function(doc) {
-            if (doc) {
-                doc.save(fileName + '.pdf');
-                showToast("PDF descargado exitosamente: " + fileName + ".pdf", "success");
-            }
-        });
-    });
-
-    // ================================
-    // SISTEMA DE NOTIFICACIONES (TOAST)
-    // ================================
-    function showToast(message, type = "warning") {
-        const toastEl = document.getElementById("liveToast");
-
-        // Verificar que el toast existe
-        if (!toastEl) {
-            console.warn("Toast element not found");
-            return;
-        }
-
-        const toastHeader = toastEl.querySelector(".toast-header strong");
-        const toastBody = toastEl.querySelector(".toast-body");
-
-        if (toastBody) {
-            toastBody.textContent = message;
-        }
-
-        toastEl.classList.remove("success", "danger", "warning");
-
-        if (type === "success") {
-            toastEl.classList.add("success");
-            if (toastHeader) toastHeader.textContent = "✅ Éxito";
-        } else if (type === "danger") {
-            toastEl.classList.add("danger");
-            if (toastHeader) toastHeader.textContent = "❌ Error";
-        } else {
-            toastEl.classList.add("warning");
-            if (toastHeader) toastHeader.textContent = "⚠️ Aviso";
-        }
-
-        const toast = new bootstrap.Toast(toastEl, {
-            delay: 3000
-        });
-        toast.show();
-    }
-    // ================================
-    // SINCRONIZAR Y PERSISTIR INPUTS (Protegido)
-    // ================================
-    if (titleInput && tituloNumberInput) {
         titleInput.addEventListener('input', function() {
             localStorage.setItem('qr_form_title', this.value);
             tituloNumberInput.value = this.value;
         });
-        saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
-    }
 
-    if (partidaInput && numberInput) {
         partidaInput.addEventListener('input', function() {
             localStorage.setItem('qr_form_partida', this.value);
             numberInput.value = this.value;
         });
+
+        saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
         saveToLocalStorageOnChange(numberInput, 'qr_form_partida');
-    }
 
-    const clearFormBtn = document.getElementById("clearForm");
-    if (clearFormBtn && mainForm) {
-        clearFormBtn.addEventListener("click", function() {
+
+        // ================================
+        // FUNCIONES DE LIMPIEZA
+        // ================================
+        document.getElementById("clearForm").addEventListener("click", function() {
             resetGenerationFormState();
+
             mainForm.classList.remove('was-validated');
+
+            // 🔥 MODIFICADO: Mantener tab al limpiar
             window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
+
             showToast("Formulario y datos persistentes limpiados.", "success");
-            
         });
-    }
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Capturar todos los campos de partida disponibles en la vista
-        const inputsPartida = [
-            document.getElementById('partida'),
-            document.getElementById('inputBuscarPartida')
-        ].filter(Boolean);
 
-        const btnSubir = document.getElementById('btnSubirArchivo');
-
-        // 2. Aplicar el filtro carácter por carácter en tiempo real
-        inputsPartida.forEach(inputPartida => {
-            inputPartida.setAttribute('maxlength', '9');
-
-            inputPartida.addEventListener('input', function(e) {
-                let val = this.value;
-                let cleaned = '';
-
-                for (let i = 0; i < val.length && cleaned.length < 9; i++) {
-                    let char = val.charAt(i);
-
-                    if (cleaned.length === 0) {
-                        // Primer carácter: Puede ser una letra (A-Z) o un número del 1 al 9 (PROHIBIDO el 0 al inicio)
-                        if (/^[a-zA-Z1-9]$/.test(char)) {
-                            cleaned += (/[a-zA-Z]/.test(char) ? char.toUpperCase() : char);
-                        }
-                    } else if (cleaned.length === 1 && /^[a-zA-Z]$/.test(cleaned.charAt(0))) {
-                        // Segundo carácter (si el primero fue letra): Obligatoriamente un número del 1 al 9
-                        if (/^[1-9]$/.test(char)) {
-                            cleaned += char;
-                        }
-                    } else {
-                        // Demás caracteres: Números permitidos del 0 al 9
-                        if (/^[0-9]$/.test(char)) {
-                            cleaned += char;
-                        }
+        // ================================
+        // VALIDACIÓN DE FORMULARIOS
+        // ================================
+        (function() {
+            'use strict';
+            Array.prototype.slice.call(document.querySelectorAll('.needs-validation')).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
                     }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+
+        // ================================
+        // CARGA Y PREVISUALIZACIÓN DEL PDF
+        // ================================
+        pdfInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type === 'application/pdf') {
+                const fileName = file.name.replace(/\.pdf$/i, '');
+
+                // 🔥 MODIFICADO: Se actualiza siempre, ignorando si ya tenía texto
+                titleInput.value = fileName;
+                localStorage.setItem('qr_form_title', fileName);
+
+                if (!tituloNumberInput.value) {
+                    tituloNumberInput.value = fileName;
                 }
-                this.value = cleaned;
+
+                const fileURL = URL.createObjectURL(file);
+                // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
+                pdfViewer.src = fileURL + '#toolbar=1&navpanes=0&scrollbar=1';
+
+                showToast("PDF cargado correctamente", "success");
+            } else {
+                showToast('Por favor, selecciona un archivo PDF válido.', "danger");
+                pdfInput.value = "";
+            }
+        });
+
+        // ================================
+        // CARGA MANUAL DE QR
+        // ================================
+        qrFile.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const imageUrl = URL.createObjectURL(file);
+                qrPreview.src = imageUrl;
+                qrCodeImageUrl = imageUrl;
+                showToast("Código QR cargado correctamente", "success");
+            } else {
+                showToast("Por favor selecciona una imagen válida", "warning");
+            }
+        });
+
+        document.getElementById("upload-button").addEventListener('click', function() {
+            qrFile.click();
+        });
+
+        // ================================
+        // OBTENER VALORES DE CONFIGURACIÓN
+        // ================================
+        function getConfigurationValues() {
+            return {
+                partidaValue: numberInput.value.trim(),
+                tituloValue: tituloNumberInput.value.trim(),
+                includeQR: document.getElementById('includeQR').checked,
+                includePartida: document.getElementById('includePartida').checked,
+                qrXVal: parseFloat(qrX.value),
+                qrYVal: parseFloat(qrY.value),
+                numXVal: parseFloat(numX.value),
+                numYVal: parseFloat(numY.value),
+                qrCodeImageUrl: qrCodeImageUrl
+            };
+        }
+
+        // ================================
+        // GENERACIÓN DE PDF CON JSPDF
+        // ================================
+        function generatePDF(callback) {
+            const config = getConfigurationValues();
+
+            if (config.includeQR && !config.qrCodeImageUrl) {
+                showToast("Debes cargar o generar un código QR para incluirlo.", "danger");
+                return;
+            }
+
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'in',
+                format: [11.69, 16.54]
+            });
+
+            if (config.includeQR && config.qrCodeImageUrl) {
+                const qrImage = new Image();
+                qrImage.crossOrigin = "anonymous";
+                qrImage.src = config.qrCodeImageUrl;
+
+                qrImage.onload = function() {
+                    try {
+                        doc.addImage(qrImage, 'PNG', config.qrXVal, config.qrYVal, 1.10, 1.10);
+
+                        if (config.includePartida && config.partidaValue) {
+                            doc.setFontSize(14);
+                            doc.text(config.partidaValue, config.numXVal, config.numYVal);
+                        }
+                        callback(doc);
+                    } catch (error) {
+                        console.error("Error al agregar imagen QR:", error);
+                        showToast("Error al agregar el código QR al PDF", "danger");
+                    }
+                };
+
+                qrImage.onerror = function() {
+                    console.error("Error al cargar imagen QR");
+                    showToast("Error al cargar la imagen del código QR", "danger");
+                };
+            } else {
+                if (config.includePartida && config.partidaValue) {
+                    doc.setFontSize(14);
+                    doc.text(config.partidaValue, config.numXVal, config.numYVal);
+                }
+                callback(doc);
+            }
+        }
+
+        // ================================
+        // PREVISUALIZAR PDF
+        // ================================
+        previewBtn.addEventListener('click', function() {
+            const config = getConfigurationValues();
+
+            // 🔥 REMOVIDO: Validación de título
+            // Ya no es necesario tener un título para previsualizar
+
+            generatePDF(function(doc) {
+                if (doc) {
+                    // 🔥 AGREGAR #toolbar=1 para mostrar barra de herramientas
+                    const pdfDataUri = doc.output('datauristring');
+                    pdfPreview.src = pdfDataUri + '#toolbar=1&navpanes=0&scrollbar=1';
+                    showToast("Vista previa generada correctamente", "success");
+                }
             });
         });
 
-        // 3. Interceptar el botón de subida con validaciones ordenadas y únicas
-        if (btnSubir) {
-            const originalOnClick = btnSubir.onclick || btnSubir.getAttribute('onclick');
+        // ================================
+        // EXPORTAR PDF
+        // ================================
+        exportBtn.addEventListener('click', function() {
+            const config = getConfigurationValues();
 
-            btnSubir.onclick = function(e) {
-                if (e) e.preventDefault();
+            // 🔥 MODIFICADO: Usar título o nombre por defecto
+            const fileName = config.tituloValue || 'documento-' + Date.now();
 
-                const inputTitulo = document.getElementById('title') || document.querySelector('input[name="title"]');
-                const activePartida = document.getElementById('partida');
-
-                // PASO 1: Validar Título
-                if (inputTitulo && inputTitulo.value.trim() === '') {
-                    showCustomErrorModal('Campo Requerido', 'Por favor, ingrese el nombre del título antes de continuar.');
-                    inputTitulo.focus();
-                    return false;
+            generatePDF(function(doc) {
+                if (doc) {
+                    doc.save(fileName + '.pdf');
+                    showToast("PDF descargado exitosamente: " + fileName + ".pdf", "success");
                 }
+            });
+        });
 
-                // PASO 2: Validar Partida (Acepta exactamente 8 números o 1 letra + 8 números, sin ceros iniciales)
-                if (activePartida) {
-                    const valPartida = activePartida.value.trim();
-                    const regexPartida = /^([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})$/;
+        // ================================
+        // SISTEMA DE NOTIFICACIONES (TOAST)
+        // ================================
+        function showToast(message, type = "warning") {
+            const toastEl = document.getElementById("liveToast");
 
-                    if (!regexPartida.test(valPartida)) {
-                        showCustomErrorModal('Partida Inválida', 'La partida debe ser de 8 dígitos (ej. 12345678) o 1 letra seguida de 8 dígitos (ej. P12345678). El primer número nunca puede ser 0.');
-                        activePartida.focus();
+            // Verificar que el toast existe
+            if (!toastEl) {
+                console.warn("Toast element not found");
+                return;
+            }
+
+            const toastHeader = toastEl.querySelector(".toast-header strong");
+            const toastBody = toastEl.querySelector(".toast-body");
+
+            if (toastBody) {
+                toastBody.textContent = message;
+            }
+
+            toastEl.classList.remove("success", "danger", "warning");
+
+            if (type === "success") {
+                toastEl.classList.add("success");
+                if (toastHeader) toastHeader.textContent = "✅ Éxito";
+            } else if (type === "danger") {
+                toastEl.classList.add("danger");
+                if (toastHeader) toastHeader.textContent = "❌ Error";
+            } else {
+                toastEl.classList.add("warning");
+                if (toastHeader) toastHeader.textContent = "⚠️ Aviso";
+            }
+
+            const toast = new bootstrap.Toast(toastEl, {
+                delay: 3000
+            });
+            toast.show();
+        }
+        // ================================
+        // SINCRONIZAR Y PERSISTIR INPUTS (Protegido)
+        // ================================
+        if (titleInput && tituloNumberInput) {
+            titleInput.addEventListener('input', function() {
+                localStorage.setItem('qr_form_title', this.value);
+                tituloNumberInput.value = this.value;
+            });
+            saveToLocalStorageOnChange(tituloNumberInput, 'qr_form_title');
+        }
+
+        if (partidaInput && numberInput) {
+            partidaInput.addEventListener('input', function() {
+                localStorage.setItem('qr_form_partida', this.value);
+                numberInput.value = this.value;
+            });
+            saveToLocalStorageOnChange(numberInput, 'qr_form_partida');
+        }
+
+        const clearFormBtn = document.getElementById("clearForm");
+        if (clearFormBtn && mainForm) {
+            clearFormBtn.addEventListener("click", function() {
+                resetGenerationFormState();
+                mainForm.classList.remove('was-validated');
+                window.location.href = "?action=dasboard&tab=" + encodeURIComponent(currentTab);
+                showToast("Formulario y datos persistentes limpiados.", "success");
+
+            });
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Capturar todos los campos de partida disponibles en la vista
+            const inputsPartida = [
+                document.getElementById('partida'),
+                document.getElementById('inputBuscarPartida')
+            ].filter(Boolean);
+
+            const btnSubir = document.getElementById('btnSubirArchivo');
+
+            // 2. Aplicar el filtro carácter por carácter en tiempo real
+            inputsPartida.forEach(inputPartida => {
+                inputPartida.setAttribute('maxlength', '9');
+
+                inputPartida.addEventListener('input', function(e) {
+                    let val = this.value;
+                    let cleaned = '';
+
+                    for (let i = 0; i < val.length && cleaned.length < 9; i++) {
+                        let char = val.charAt(i);
+
+                        if (cleaned.length === 0) {
+                            // Primer carácter: Puede ser una letra (A-Z) o un número del 1 al 9 (PROHIBIDO el 0 al inicio)
+                            if (/^[a-zA-Z1-9]$/.test(char)) {
+                                cleaned += (/[a-zA-Z]/.test(char) ? char.toUpperCase() : char);
+                            }
+                        } else if (cleaned.length === 1 && /^[a-zA-Z]$/.test(cleaned.charAt(0))) {
+                            // Segundo carácter (si el primero fue letra): Obligatoriamente un número del 1 al 9
+                            if (/^[1-9]$/.test(char)) {
+                                cleaned += char;
+                            }
+                        } else {
+                            // Demás caracteres: Números permitidos del 0 al 9
+                            if (/^[0-9]$/.test(char)) {
+                                cleaned += char;
+                            }
+                        }
+                    }
+                    this.value = cleaned;
+                });
+            });
+
+            // 3. Interceptar el botón de subida con validaciones ordenadas y únicas
+            if (btnSubir) {
+                const originalOnClick = btnSubir.onclick || btnSubir.getAttribute('onclick');
+
+                btnSubir.onclick = function(e) {
+                    if (e) e.preventDefault();
+
+                    const inputTitulo = document.getElementById('title') || document.querySelector('input[name="title"]');
+                    const activePartida = document.getElementById('partida');
+
+                    // PASO 1: Validar Título
+                    if (inputTitulo && inputTitulo.value.trim() === '') {
+                        showCustomErrorModal('Campo Requerido', 'Por favor, ingrese el nombre del título antes de continuar.');
+                        inputTitulo.focus();
                         return false;
                     }
-                }
 
-                // PASO 3: Ejecutar acción original (SweetAlert de confirmación)
-                if (typeof originalOnClick === 'function') {
-                    return originalOnClick.call(this, e);
-                } else if (typeof originalOnClick === 'string') {
-                    return eval(originalOnClick);
-                }
-            };
-        }
-    });
+                    // PASO 2: Validar Partida (Acepta exactamente 8 números o 1 letra + 8 números, sin ceros iniciales)
+                    if (activePartida) {
+                        const valPartida = activePartida.value.trim();
+                        const regexPartida = /^([A-Z][1-9][0-9]{7}|[1-9][0-9]{7})$/;
 
-    function showCustomErrorModal(title, message) {
-        const modal = document.getElementById('customErrorModal');
-        const titleEl = document.getElementById('customErrorTitle');
-        const msgEl = document.getElementById('customErrorMessage');
-        
-        if (modal && titleEl && msgEl) {
-            titleEl.textContent = title;
-            msgEl.textContent = message;
-            modal.style.display = 'flex';
-        }
-    }
+                        if (!regexPartida.test(valPartida)) {
+                            showCustomErrorModal('Partida Inválida', 'La partida debe ser de 8 dígitos (ej. 12345678) o 1 letra seguida de 8 dígitos (ej. P12345678). El primer número nunca puede ser 0.');
+                            activePartida.focus();
+                            return false;
+                        }
+                    }
 
-    function closeCustomErrorModal() {
-        const modal = document.getElementById('customErrorModal');
-        if (modal) {
-            modal.style.display = 'none';
+                    // PASO 3: Ejecutar acción original (SweetAlert de confirmación)
+                    if (typeof originalOnClick === 'function') {
+                        return originalOnClick.call(this, e);
+                    } else if (typeof originalOnClick === 'string') {
+                        return eval(originalOnClick);
+                    }
+                };
+            }
+        });
+
+        function showCustomErrorModal(title, message) {
+            const modal = document.getElementById('customErrorModal');
+            const titleEl = document.getElementById('customErrorTitle');
+            const msgEl = document.getElementById('customErrorMessage');
+
+            if (modal && titleEl && msgEl) {
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+                modal.style.display = 'flex';
+            }
         }
-    }
-</script>
+
+        function closeCustomErrorModal() {
+            const modal = document.getElementById('customErrorModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
