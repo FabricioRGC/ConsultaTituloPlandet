@@ -164,7 +164,6 @@ $hasFilters = !empty($_POST['title'] ?? '') || !empty($_POST['partida'] ?? '') |
     <!-- 🌟 Notificación flotante elegante del resumen del mes -->
     <div id="monthlyModalToast" style="position: fixed; bottom: 30px; right: 30px; background: #ffffff; border-left: 5px solid #7c3aed; box-shadow: 0 10px 25px rgba(0,0,0,0.15); padding: 16px 20px; border-radius: 10px; display: flex; align-items: center; gap: 14px; z-index: 9999; opacity: 0; transform: translateY(20px); transition: all 0.4s ease;">
         <div style="background: #ede9fe; color: #06020e; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold;">
-            📊
         </div>
         <div>
             <h4 style="margin: 0; font-size: 14px; color: #232b38; font-weight: 700;">Resumen de <?= ucfirst($nombreMesActual) ?></h4>

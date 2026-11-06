@@ -87,7 +87,7 @@ $fechaActual = date('Y-m-d');
                     </section>
 
                     <section class="card">
-                        <h2 class="card-title">⚙️ Configuración de Posición</h2>
+                        <h2 class="card-title">Configuración de Posición</h2>
 
                         <div class="position-grid">
                             <div class="position-group">
@@ -181,7 +181,7 @@ $fechaActual = date('Y-m-d');
 <div class="toast-container" style="position: fixed !important; top: 80px !important; right: 20px !important; bottom: auto !important; left: auto !important; width: auto !important; max-width: 350px !important; z-index: 9999 !important;">
     <div id="liveToast" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000" style="width: 100% !important; background: white !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; border-radius: 8px !important;">
         <div class="toast-header" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 8px 12px;">
-            <strong class="me-auto" style="font-weight: 600; color: #1e293b;">⚠️ Aviso</strong>
+            <strong class="me-auto" style="font-weight: 600; color: #1e293b;">Aviso</strong>
         </div>
         <div class="toast-body" style="padding: 12px; color: #475569; font-size: 14px;">
             Mensaje de notificación
@@ -379,7 +379,7 @@ $fechaActual = date('Y-m-d');
 
             // Mostramos la ventana flotante
             Swal.fire({
-                title: '📋 Registros y Envíos de Hoy',
+                title: 'Registros y Envíos de Hoy',
                 html: `
                 <div style="max-height: 280px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
@@ -649,7 +649,7 @@ $fechaActual = date('Y-m-d');
                 if (toastHeader) toastHeader.textContent = "❌ Error";
             } else {
                 toastEl.classList.add("warning");
-                if (toastHeader) toastHeader.textContent = "⚠️ Aviso";
+                if (toastHeader) toastHeader.textContent = "Aviso";
             }
 
             const toast = new bootstrap.Toast(toastEl, {
